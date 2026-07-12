@@ -1,0 +1,13 @@
+.background {
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-header-dark) 0%,
+    var(--color-header-accent) 100%
+  );
+}

@@ -1,0 +1,15 @@
+:root {
+  --color-header-dark: #1b2a31;
+  --color-header-accent: #215866;
+  --color-background: #f6f6f6;
+  --color-text: #1b2a31;
+  --color-text-muted: #4b5b62;
+  --color-error: #b3261e;
+  --color-surface-glass: rgba(255, 255, 255, 0.15);
+  --color-border-glass: rgba(255, 255, 255, 0.35);
+
+  --font-title: var(--font-inter), "Inter", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-weight-title: 600;
+  --font-weight-body: 400;
+}
