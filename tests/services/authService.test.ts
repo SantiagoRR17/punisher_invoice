@@ -17,7 +17,7 @@ beforeAll(async () => {
   const user: User = {
     username: "dueno.taller",
     passwordHash,
-    role: "dueno",
+    role: "jefe",
     createdAt: new Date(),
   };
   await db.collection<User>("users").insertOne(user);
@@ -33,7 +33,7 @@ describe("verifyCredentials", () => {
 
     expect(result).not.toBeNull();
     expect(result?.username).toBe("dueno.taller");
-    expect(result?.role).toBe("dueno");
+    expect(result?.role).toBe("jefe");
   });
 
   it("devuelve null cuando la contraseña es incorrecta", async () => {

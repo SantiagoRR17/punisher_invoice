@@ -1,12 +1,27 @@
+import Link from "next/link";
+import LogoutButton from "@/components/LogoutButton";
+import styles from "./menu.module.css";
+
 export default function MenuPage() {
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>Menú principal</h1>
-      <p>
-        Pantalla pendiente de implementar en la feature 002 · Menú principal.
-        Esta página solo existe como destino de redirección tras iniciar
-        sesión.
-      </p>
+    <main className={styles.background}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Menú principal</h1>
+        <p className={styles.subtitle}>Elige qué quieres generar</p>
+
+        <nav className={styles.links}>
+          <Link className={styles.link} href="/cotizacion">
+            Cotización
+          </Link>
+          <Link className={styles.link} href="/cuenta-cobro">
+            Cuenta de cobro
+          </Link>
+        </nav>
+
+        <div className={styles.footer}>
+          <LogoutButton />
+        </div>
+      </div>
     </main>
   );
 }
