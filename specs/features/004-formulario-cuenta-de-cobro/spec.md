@@ -1,6 +1,6 @@
 # **004 · Formulario Cuenta de cobro**
 
-**Estado:** implementada, pendiente de validación del usuario
+**Estado:** Hecho ✅
 
 ## Qué hace
 
