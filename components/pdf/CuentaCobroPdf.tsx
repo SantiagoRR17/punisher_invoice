@@ -1,12 +1,12 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrencyCOP } from "@/lib/currency";
-import type { Cotizacion } from "@/models/Cotizacion";
-import { COLORS, PdfHeader, PdfFooter } from "./PdfBrand";
+import type { CuentaCobro } from "@/models/CuentaCobro";
+import { COLORS, PdfHeader, PdfFooter, formatFecha } from "./PdfBrand";
 
-const NOTAS = [
-  "Cualquier trabajo, modificación o servicio adicional no contemplado dentro de los costos descritos en esta cotización será cobrado como un valor adicional.",
-  "Abono del 50% al inicio del proyecto y el 50% al finalizar la entrega total.",
-  "Plazo de entrega 20 días hábiles a partir del abono del 50%.",
+const FORMA_PAGO = [
+  "DAVIVIENDA: 0570 4518 7009 3346 – Ahorros – ERICK JULIAN DUEÑAS FORERO",
+  "NEQUI: 322 200 3921",
+  "Bre-B: 322 200 3921",
 ];
 
 const styles = StyleSheet.create({
@@ -27,8 +27,10 @@ const styles = StyleSheet.create({
   },
   clienteText: { fontSize: 9, marginBottom: 2 },
   clienteNombre: { fontFamily: "Helvetica-Bold" },
-  title: { fontSize: 15, fontFamily: "Helvetica-Bold", textAlign: "right" },
-  intro: { fontSize: 8, maxWidth: 220, textAlign: "right", color: COLORS.textMuted, marginTop: 6 },
+  title: { fontSize: 18, fontFamily: "Helvetica-Bold", textAlign: "right", marginBottom: 8 },
+  metaRow: { flexDirection: "row", justifyContent: "flex-end", gap: 8, marginBottom: 2 },
+  metaLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.accent },
+  metaValue: { fontSize: 8 },
   table: { marginTop: 8, borderWidth: 1, borderColor: COLORS.dark },
   tableHeaderRow: { flexDirection: "row", backgroundColor: COLORS.dark },
   tableHeaderCell: {
@@ -39,13 +41,26 @@ const styles = StyleSheet.create({
   },
   tableRow: { flexDirection: "row", borderTopWidth: 1, borderTopColor: "#dddddd" },
   tableCell: { fontSize: 8, padding: 6 },
-  colItem: { width: "8%" },
-  colDescripcion: { width: "42%" },
+  colDescripcion: { width: "50%" },
   colCantidad: { width: "16%", textAlign: "center" },
   colValorUnitario: { width: "17%", textAlign: "right" },
   colValorTotal: { width: "17%", textAlign: "right" },
-  totalRow: { flexDirection: "row", backgroundColor: COLORS.dark },
-  totalLabel: {
+  summaryRow: { flexDirection: "row", borderTopWidth: 1, borderTopColor: "#dddddd" },
+  summaryLabel: {
+    width: "83%",
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    padding: 6,
+    textAlign: "right",
+  },
+  summaryValue: {
+    width: "17%",
+    fontSize: 9,
+    padding: 6,
+    textAlign: "right",
+  },
+  saldoRow: { flexDirection: "row", backgroundColor: COLORS.dark },
+  saldoLabel: {
     width: "83%",
     color: "#ffffff",
     fontSize: 9,
@@ -53,7 +68,7 @@ const styles = StyleSheet.create({
     padding: 6,
     textAlign: "right",
   },
-  totalValue: {
+  saldoValue: {
     width: "17%",
     backgroundColor: COLORS.yellow,
     color: COLORS.dark,
@@ -62,9 +77,14 @@ const styles = StyleSheet.create({
     padding: 6,
     textAlign: "right",
   },
-  notes: { marginTop: 16 },
-  noteLine: { fontSize: 7, marginBottom: 4, color: COLORS.textMuted },
-  noteLabel: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
+  formaPago: { marginTop: 16 },
+  formaPagoTitle: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.accent,
+    marginBottom: 4,
+  },
+  formaPagoLine: { fontSize: 8, marginBottom: 3 },
   signatureBlock: { marginTop: 24, alignItems: "flex-end" },
   signaturePlaceholder: {
     width: 160,
@@ -76,12 +96,13 @@ const styles = StyleSheet.create({
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
 });
 
-interface CotizacionPdfProps {
-  cotizacion: Pick<Cotizacion, "cliente" | "items" | "fecha" | "total">;
+interface CuentaCobroPdfProps {
+  cuenta: Pick<CuentaCobro, "cliente" | "items" | "consecutivo" | "fecha" | "total" | "abonos" | "saldo">;
 }
 
-export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
-  const { cliente, items, fecha, total } = cotizacion;
+export default function CuentaCobroPdf({ cuenta }: CuentaCobroPdfProps) {
+  const { cliente, items, consecutivo, fecha, total, abonos, saldo } = cuenta;
+  const abonoTotal = abonos.reduce((sum, abono) => sum + abono.valor, 0);
 
   return (
     <Document>
@@ -99,17 +120,20 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
               <Text style={styles.clienteText}>Barrio {cliente.barrio}</Text>
             </View>
             <View>
-              <Text style={styles.title}>COTIZACIÓN Y ORDEN DE TRABAJO</Text>
-              <Text style={styles.intro}>
-                De manera atenta y con base en su requerimiento, generamos la correspondiente
-                orden de trabajo con las siguientes características:
-              </Text>
+              <Text style={styles.title}>CUENTA DE COBRO</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>N° CUENTA:</Text>
+                <Text style={styles.metaValue}>{consecutivo}</Text>
+              </View>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>FECHA:</Text>
+                <Text style={styles.metaValue}>{formatFecha(fecha)}</Text>
+              </View>
             </View>
           </View>
 
           <View style={styles.table}>
             <View style={styles.tableHeaderRow}>
-              <Text style={[styles.tableHeaderCell, styles.colItem]}>ÍTEM</Text>
               <Text style={[styles.tableHeaderCell, styles.colDescripcion]}>DESCRIPCIÓN</Text>
               <Text style={[styles.tableHeaderCell, styles.colCantidad]}>CANTIDAD</Text>
               <Text style={[styles.tableHeaderCell, styles.colValorUnitario]}>
@@ -120,7 +144,6 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
 
             {items.map((item, index) => (
               <View key={index} style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.colItem]}>{index + 1}</Text>
                 <Text style={[styles.tableCell, styles.colDescripcion]}>{item.descripcion}</Text>
                 <Text style={[styles.tableCell, styles.colCantidad]}>{item.cantidad}</Text>
                 <Text style={[styles.tableCell, styles.colValorUnitario]}>
@@ -132,25 +155,31 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
               </View>
             ))}
 
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>TOTAL</Text>
-              <Text style={styles.totalValue}>{formatCurrencyCOP(total)}</Text>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>TOTAL</Text>
+              <Text style={styles.summaryValue}>{formatCurrencyCOP(total)}</Text>
+            </View>
+
+            {abonoTotal > 0 && (
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>ABONO</Text>
+                <Text style={styles.summaryValue}>{formatCurrencyCOP(abonoTotal)}</Text>
+              </View>
+            )}
+
+            <View style={styles.saldoRow}>
+              <Text style={styles.saldoLabel}>SALDO PENDIENTE</Text>
+              <Text style={styles.saldoValue}>{formatCurrencyCOP(saldo)}</Text>
             </View>
           </View>
 
-          <View style={styles.notes}>
-            <Text style={styles.noteLine}>
-              <Text style={styles.noteLabel}>NOTA 1: </Text>
-              {NOTAS[0]}
-            </Text>
-            <Text style={styles.noteLine}>
-              <Text style={styles.noteLabel}>NOTA 2: </Text>
-              {NOTAS[1]}
-            </Text>
-            <Text style={styles.noteLine}>
-              <Text style={styles.noteLabel}>NOTA 3: </Text>
-              {NOTAS[2]}
-            </Text>
+          <View style={styles.formaPago}>
+            <Text style={styles.formaPagoTitle}>FORMA DE PAGO</Text>
+            {FORMA_PAGO.map((linea) => (
+              <Text key={linea} style={styles.formaPagoLine}>
+                {linea}
+              </Text>
+            ))}
           </View>
 
           <View style={styles.signatureBlock}>
