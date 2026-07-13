@@ -75,28 +75,28 @@ export class CuentaCobroNoEncontradaError extends Error {
 export async function registrarAbono(consecutivo: string, valor: number): Promise<CuentaCobro> {
   const db = await getDb();
   const collection = db.collection<CuentaCobro>(CUENTAS_COBRO_COLLECTION);
-  const cuenta = await collection.findOne({ consecutivo });
 
-  if (!cuenta) {
-    throw new CuentaCobroNoEncontradaError();
-  }
-
-  if (valor <= 0 || valor > cuenta.saldo) {
+  if (valor <= 0) {
     throw new SaldoInsuficienteError();
   }
 
   const nuevoAbono: AbonoCuentaCobro = { valor, fecha: new Date() };
-  const nuevoSaldo = cuenta.saldo - valor;
 
-  await collection.updateOne(
-    { consecutivo },
-    { $push: { abonos: nuevoAbono }, $set: { saldo: nuevoSaldo } }
+  // Validación y escritura en una sola operación atómica: la condición del
+  // saldo va en el filtro, así dos abonos simultáneos nunca se pisan entre sí.
+  const resultado = await collection.findOneAndUpdate(
+    { consecutivo, saldo: { $gte: valor } },
+    { $push: { abonos: nuevoAbono }, $inc: { saldo: -valor } },
+    { returnDocument: "after" }
   );
 
-  return {
-    ...cuenta,
-    _id: cuenta._id?.toString(),
-    abonos: [...cuenta.abonos, nuevoAbono],
-    saldo: nuevoSaldo,
-  };
+  if (!resultado) {
+    const existente = await collection.findOne({ consecutivo });
+    if (!existente) {
+      throw new CuentaCobroNoEncontradaError();
+    }
+    throw new SaldoInsuficienteError();
+  }
+
+  return { ...resultado, _id: resultado._id?.toString() };
 }

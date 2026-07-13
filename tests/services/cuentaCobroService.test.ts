@@ -137,4 +137,27 @@ describe("registrarAbono", () => {
       CuentaCobroNoEncontradaError
     );
   });
+
+  it("no permite que dos abonos simultáneos dejen el saldo negativo (condición de carrera)", async () => {
+    const creada = await saveCuentaCobro({
+      cliente,
+      items: [{ descripcion: "Item", cantidad: 1, valorUnitario: 1000 }],
+      abonoInicial: 0,
+    });
+
+    const resultados = await Promise.allSettled([
+      registrarAbono(creada.consecutivo, 700),
+      registrarAbono(creada.consecutivo, 700),
+    ]);
+
+    const exitosos = resultados.filter((r) => r.status === "fulfilled");
+    const rechazados = resultados.filter((r) => r.status === "rejected");
+
+    expect(exitosos).toHaveLength(1);
+    expect(rechazados).toHaveLength(1);
+
+    const db = await getDb();
+    const final = await db.collection("cuentasCobro").findOne({ consecutivo: creada.consecutivo });
+    expect(final?.saldo).toBe(300);
+  });
 });

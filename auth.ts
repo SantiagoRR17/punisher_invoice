@@ -5,7 +5,7 @@ import { verifyCredentials } from "@/services/authService";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
   providers: [
     Credentials({
       credentials: {

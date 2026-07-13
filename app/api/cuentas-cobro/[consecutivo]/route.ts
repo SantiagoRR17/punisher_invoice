@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import {
   CuentaCobroNoEncontradaError,
   SaldoInsuficienteError,
@@ -9,6 +10,11 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ consecutivo: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+  }
+
   const { consecutivo } = await params;
   const body = await request.json().catch(() => null);
   const valor = body?.valor;

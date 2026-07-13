@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { listCuentasCobro, saveCuentaCobro } from "@/services/cuentaCobroService";
 import type { ClienteCuentaCobro, ItemCuentaCobro } from "@/models/CuentaCobro";
 
+const MAX_TEXTO = 200;
+const MAX_DESCRIPCION = 500;
+const MAX_ITEMS = 50;
+const MAX_CANTIDAD = 10_000;
+const MAX_VALOR_UNITARIO = 1_000_000_000;
+
 export async function GET() {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+  }
+
   const cuentas = await listCuentasCobro();
   return NextResponse.json(cuentas);
 }
@@ -15,17 +27,21 @@ function isValidCliente(cliente: unknown): cliente is ClienteCuentaCobro {
     (c.tratamiento === "Señor" || c.tratamiento === "Señora") &&
     typeof c.nombre === "string" &&
     c.nombre.trim().length > 0 &&
+    c.nombre.length <= MAX_TEXTO &&
     typeof c.cedula === "string" &&
     c.cedula.trim().length > 0 &&
+    c.cedula.length <= MAX_TEXTO &&
     typeof c.direccion === "string" &&
     c.direccion.trim().length > 0 &&
+    c.direccion.length <= MAX_TEXTO &&
     typeof c.barrio === "string" &&
-    c.barrio.trim().length > 0
+    c.barrio.trim().length > 0 &&
+    c.barrio.length <= MAX_TEXTO
   );
 }
 
 function isValidItems(items: unknown): items is ItemCuentaCobro[] {
-  if (!Array.isArray(items) || items.length === 0) return false;
+  if (!Array.isArray(items) || items.length === 0 || items.length > MAX_ITEMS) return false;
 
   return items.every((item) => {
     if (!item || typeof item !== "object") return false;
@@ -34,12 +50,15 @@ function isValidItems(items: unknown): items is ItemCuentaCobro[] {
     return (
       typeof i.descripcion === "string" &&
       i.descripcion.trim().length > 0 &&
+      i.descripcion.length <= MAX_DESCRIPCION &&
       typeof i.cantidad === "number" &&
       Number.isFinite(i.cantidad) &&
       i.cantidad > 0 &&
+      i.cantidad <= MAX_CANTIDAD &&
       typeof i.valorUnitario === "number" &&
       Number.isFinite(i.valorUnitario) &&
-      i.valorUnitario > 0
+      i.valorUnitario > 0 &&
+      i.valorUnitario <= MAX_VALOR_UNITARIO
     );
   });
 }
@@ -49,6 +68,11 @@ function isValidAbonoInicial(abonoInicial: unknown): abonoInicial is number {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+  }
+
   const body = await request.json().catch(() => null);
 
   if (

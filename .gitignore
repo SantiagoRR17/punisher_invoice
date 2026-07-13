@@ -36,6 +36,10 @@ yarn-error.log*
 .env*
 !.env.local.example
 
+# documentos de trabajo personal (auditoria y material de estudio)
+DOCS/auditoria-seguridad.md
+DOCS/guia-estudio-proyecto.md
+
 # vercel
 .vercel
 

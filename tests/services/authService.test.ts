@@ -53,3 +53,23 @@ describe("verifyCredentials", () => {
     expect(await verifyCredentials("dueno.taller", "")).toBeNull();
   });
 });
+
+describe("verifyCredentials - límite de intentos", () => {
+  it("bloquea tras 5 intentos fallidos aunque la contraseña correcta llegue después", async () => {
+    const username = "usuario.bloqueo";
+    const db = await getDb();
+    await db.collection<User>("users").insertOne({
+      username,
+      passwordHash: await bcrypt.hash("clave-buena", 12),
+      role: "contadora",
+      createdAt: new Date(),
+    });
+
+    for (let i = 0; i < 5; i++) {
+      expect(await verifyCredentials(username, "clave-mala")).toBeNull();
+    }
+
+    const resultado = await verifyCredentials(username, "clave-buena");
+    expect(resultado).toBeNull();
+  });
+});
