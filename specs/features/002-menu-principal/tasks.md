@@ -10,7 +10,7 @@ _Checklist accionable derivada del `plan.md`. Tareas pequeñas y concretas; marc
 - [x] Validar el comportamiento responsive del menú (QA manual en 1280×800 y 375×667 contra Atlas real).
 - [x] Escribir pruebas o validaciones de navegación (Vitest para links/logout, Playwright para la protección de `/menu`).
 - [x] Validar contra los criterios de aceptación de `spec.md`.
-- [ ] Mover la feature a "Hecho" en `../../constitution/roadmap.md` (pendiente de confirmación del usuario).
+- [x] Mover la feature a "Hecho" en `../../constitution/roadmap.md`.
 
 ## Mantenimiento (checklist recurrente)
 
