@@ -16,7 +16,9 @@ Documentación funcional y técnica del formulario de cotización. Ver también 
 
 ## Diseño del PDF
 
-`components/pdf/CotizacionPdf.tsx` reconstruye el diseño de `template_model.jpeg` con los componentes propios de `@react-pdf/renderer` (`View`/`Text`, no HTML/CSS): encabezado oscuro con logo, datos de contacto y fecha; franja amarilla; sección "DATOS DEL CLIENTE" y título "COTIZACIÓN Y ORDEN DE TRABAJO"; tabla de ítems con fila de total resaltada; notas numeradas; firma; y pie de página oscuro con la marca. Es una aproximación fiel pero no una captura pixel-perfect del HTML, ya que la librería usa su propio motor de layout.
+`components/pdf/CotizacionPdf.tsx` reconstruye el diseño de `template_model.jpeg` con los componentes propios de `@react-pdf/renderer` (`View`/`Text`, no HTML/CSS): encabezado oscuro con logo, datos de contacto y fecha; franja amarilla ondulada (efecto de olas); sección "DATOS DEL CLIENTE" y título "COTIZACIÓN Y ORDEN DE TRABAJO"; tabla de ítems con fila de total resaltada; notas numeradas; firma; y pie de página oscuro con la marca. Es una aproximación fiel pero no una captura pixel-perfect del HTML, ya que la librería usa su propio motor de layout.
+
+La franja divisoria entre el encabezado y el cuerpo no es una línea recta: es una cinta amarilla ondulada, generada con un `<Path>` de SVG (`Svg`/`Path` de `@react-pdf/renderer`) construido en código por `buildWavePath()`, para imitar el efecto de olas del template. Se posiciona de forma absoluta sobre el límite entre el encabezado oscuro y el cuerpo blanco. Este efecto solo se aplica al PDF, no a la pantalla de captura (`app/cotizacion/page.tsx` conserva su encabezado metalizado recto).
 
 ## Placeholders de marca pendientes
 

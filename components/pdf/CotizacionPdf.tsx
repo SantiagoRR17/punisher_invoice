@@ -1,6 +1,56 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Svg, Path, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrencyCOP } from "@/lib/currency";
 import type { Cotizacion } from "@/models/Cotizacion";
+
+const HEADER_HEIGHT = 112;
+const WAVE_VIEWBOX_WIDTH = 600;
+const WAVE_VIEWBOX_HEIGHT = 30;
+const WAVE_AMPLITUDE = 7;
+const WAVE_THICKNESS = 9;
+const WAVE_PERIODS = 3;
+
+/**
+ * Construye el "d" de un <Path> que dibuja una cinta ondulada (ancho fijo,
+ * grosor constante) que simula el efecto de olas del template: se usa como
+ * divisor entre el encabezado oscuro y el cuerpo blanco del PDF.
+ */
+function buildWavePath(width: number, thickness: number, amplitude: number, periods: number): string {
+  const period = width / periods;
+  const half = period / 2;
+  const topBaseline = amplitude + 1;
+
+  const top: string[] = [`M0,${topBaseline}`];
+  for (let i = 0; i < periods; i++) {
+    const x0 = i * period;
+    top.push(
+      `C${x0 + half / 3},${topBaseline - amplitude} ${x0 + (half * 2) / 3},${topBaseline - amplitude} ${x0 + half},${topBaseline}`
+    );
+    top.push(
+      `C${x0 + half + half / 3},${topBaseline + amplitude} ${x0 + half + (half * 2) / 3},${topBaseline + amplitude} ${x0 + period},${topBaseline}`
+    );
+  }
+
+  const bottomBaseline = topBaseline + thickness;
+  const bottom: string[] = [`L${width},${bottomBaseline}`];
+  for (let i = periods - 1; i >= 0; i--) {
+    const x0 = i * period;
+    bottom.push(
+      `C${x0 + half + (half * 2) / 3},${bottomBaseline + amplitude} ${x0 + half + half / 3},${bottomBaseline + amplitude} ${x0 + half},${bottomBaseline}`
+    );
+    bottom.push(
+      `C${x0 + (half * 2) / 3},${bottomBaseline - amplitude} ${x0 + half / 3},${bottomBaseline - amplitude} ${x0},${bottomBaseline}`
+    );
+  }
+
+  return `${top.join(" ")} ${bottom.join(" ")} Z`;
+}
+
+const WAVE_PATH_D = buildWavePath(
+  WAVE_VIEWBOX_WIDTH,
+  WAVE_THICKNESS,
+  WAVE_AMPLITUDE,
+  WAVE_PERIODS
+);
 
 /**
  * Placeholder de marca: no existen todavía los archivos reales de logo,
@@ -36,12 +86,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   header: {
+    height: HEADER_HEIGHT,
     backgroundColor: COLORS.dark,
     color: "#ffffff",
     padding: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+  },
+  wave: {
+    position: "absolute",
+    top: HEADER_HEIGHT - WAVE_VIEWBOX_HEIGHT / 2,
+    left: 0,
+    width: "100%",
+    height: WAVE_VIEWBOX_HEIGHT,
   },
   companyBlock: { flexDirection: "row", alignItems: "center" },
   logoPlaceholder: {
@@ -59,7 +117,6 @@ const styles = StyleSheet.create({
   companyTagline: { fontSize: 7, color: COLORS.yellow, marginTop: 2, maxWidth: 180 },
   contactBlock: { alignItems: "flex-end" },
   contactLine: { fontSize: 8, marginBottom: 3 },
-  yellowStripe: { height: 4, backgroundColor: COLORS.yellow },
   body: { padding: 20 },
   titleRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 12 },
   clienteBlock: { maxWidth: 220 },
@@ -166,7 +223,6 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
             <Text style={styles.contactLine}>{formatFecha(fecha)}</Text>
           </View>
         </View>
-        <View style={styles.yellowStripe} />
 
         <View style={styles.body}>
           <View style={styles.titleRow}>
@@ -241,6 +297,17 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
         </View>
 
         <Text style={styles.footer}>{EMPRESA.tagline}</Text>
+
+        <View style={styles.wave}>
+          <Svg
+            width="100%"
+            height={WAVE_VIEWBOX_HEIGHT}
+            viewBox={`0 0 ${WAVE_VIEWBOX_WIDTH} ${WAVE_VIEWBOX_HEIGHT}`}
+            preserveAspectRatio="none"
+          >
+            <Path d={WAVE_PATH_D} fill={COLORS.yellow} />
+          </Svg>
+        </View>
       </Page>
     </Document>
   );
