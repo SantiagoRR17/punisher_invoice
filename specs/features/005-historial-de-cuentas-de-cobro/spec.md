@@ -1,6 +1,6 @@
 # **005 · Historial de cuentas de cobro**
 
-**Estado:** implementada, pendiente de validación del usuario
+**Estado:** Hecho ✅
 
 ## Qué hace
 

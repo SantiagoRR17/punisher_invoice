@@ -14,7 +14,7 @@ _Checklist accionable derivada del `plan.md`. Tareas pequeñas y concretas; marc
 - [x] Validar responsive y consistencia visual con el resto del sistema.
 - [x] Escribir pruebas de listado, registro de abono (incluida la validación del saldo) y de la vista.
 - [x] Validar contra los criterios de aceptación de `spec.md`.
-- [ ] Mover la feature a "Hecho" en `../../constitution/roadmap.md` (pendiente de confirmación del usuario).
+- [x] Mover la feature a "Hecho" en `../../constitution/roadmap.md`.
 
 ## Mantenimiento (checklist recurrente)
 
