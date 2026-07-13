@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
-import { saveCuentaCobro } from "@/services/cuentaCobroService";
+import { listCuentasCobro, saveCuentaCobro } from "@/services/cuentaCobroService";
 import type { ClienteCuentaCobro, ItemCuentaCobro } from "@/models/CuentaCobro";
+
+export async function GET() {
+  const cuentas = await listCuentasCobro();
+  return NextResponse.json(cuentas);
+}
 
 function isValidCliente(cliente: unknown): cliente is ClienteCuentaCobro {
   if (!cliente || typeof cliente !== "object") return false;

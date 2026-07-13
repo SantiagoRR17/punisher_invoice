@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe("MenuPage", () => {
-  it("presenta los accesos a cotización y cuenta de cobro", () => {
+  it("presenta los accesos a cotización, cuenta de cobro e historial", () => {
     render(<MenuPage />);
 
     expect(screen.getByRole("link", { name: /cotización/i })).toHaveAttribute(
@@ -21,6 +21,10 @@ describe("MenuPage", () => {
     expect(
       screen.getByRole("link", { name: /cuenta de cobro/i })
     ).toHaveAttribute("href", "/cuenta-cobro");
+    expect(screen.getByRole("link", { name: /historial/i })).toHaveAttribute(
+      "href",
+      "/historial"
+    );
   });
 
   it("incluye el botón de cerrar sesión", () => {

@@ -16,6 +16,9 @@ export default function MenuPage() {
           <Link className={styles.link} href="/cuenta-cobro">
             Cuenta de cobro
           </Link>
+          <Link className={styles.link} href="/historial">
+            Historial
+          </Link>
         </nav>
 
         <div className={styles.footer}>
