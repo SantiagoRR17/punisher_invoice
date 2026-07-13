@@ -16,15 +16,15 @@ Documentación funcional y técnica de la pantalla de acceso. Ver también `spec
 No hay pantalla de registro. Los usuarios autorizados se crean con el script `scripts/seedUsers.ts`:
 
 ```
-pnpm run seed:users -- --username <usuario> --password <password> --role dueno|contadora
+pnpm run seed:users -- --username <usuario> --password <password> --role jefe|contadora
 ```
 
 Requiere `MONGODB_URI` y `MONGODB_DB` configurados en `.env.local` (copiar desde `.env.local.example`). La contraseña se hashea con bcrypt antes de guardarse; nunca se almacena en texto plano ni se versiona en el repositorio.
 
-## Pendiente fuera de esta feature
+## Actualización posterior
 
-- Conexión real a MongoDB Atlas: por ahora solo existe la variable documentada en `.env.local.example`. La conexión real la configura el usuario del proyecto cuando lo decida.
-- Contenido real de `/menu`: esta feature solo agrega una página placeholder como destino de redirección; el contenido completo es la feature `002-menu-principal`.
+- Conexión real a MongoDB Atlas: configurada y validada por el usuario (ver `specs/features/001-login/spec.md`).
+- Contenido real de `/menu`: ya implementado en la feature `002-menu-principal` (ver `DOCS/002-menu-principal.md`); dejó de ser un placeholder.
 
 ## Errores previsibles
 
