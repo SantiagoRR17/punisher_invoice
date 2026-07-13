@@ -2,51 +2,86 @@ import { Document, Page, View, Text, Svg, Path, StyleSheet } from "@react-pdf/re
 import { formatCurrencyCOP } from "@/lib/currency";
 import type { Cotizacion } from "@/models/Cotizacion";
 
-const HEADER_HEIGHT = 112;
+const HEADER_ZONE_HEIGHT = 112;
 const WAVE_VIEWBOX_WIDTH = 600;
-const WAVE_VIEWBOX_HEIGHT = 30;
+const WAVE_BASELINE = 90;
 const WAVE_AMPLITUDE = 7;
 const WAVE_THICKNESS = 9;
 const WAVE_PERIODS = 3;
 
 /**
- * Construye el "d" de un <Path> que dibuja una cinta ondulada (ancho fijo,
- * grosor constante) que simula el efecto de olas del template: se usa como
- * divisor entre el encabezado oscuro y el cuerpo blanco del PDF.
+ * Traza la curva ondulada (misma fórmula seno-aproximada por curvas cúbicas)
+ * a lo largo de `width`, alrededor de `baseline`, en la dirección indicada.
+ * Se usa tanto para el borde inferior del fondo oscuro como para los bordes
+ * de la cinta amarilla, de forma que ambas figuras compartan exactamente la
+ * misma curva y no quede un borde recto asomando.
  */
-function buildWavePath(width: number, thickness: number, amplitude: number, periods: number): string {
+function traceWave(
+  width: number,
+  baseline: number,
+  amplitude: number,
+  periods: number,
+  direction: "forward" | "backward"
+): string {
   const period = width / periods;
   const half = period / 2;
-  const topBaseline = amplitude + 1;
+  const order = direction === "forward" ? [...Array(periods).keys()] : [...Array(periods).keys()].reverse();
 
-  const top: string[] = [`M0,${topBaseline}`];
-  for (let i = 0; i < periods; i++) {
-    const x0 = i * period;
-    top.push(
-      `C${x0 + half / 3},${topBaseline - amplitude} ${x0 + (half * 2) / 3},${topBaseline - amplitude} ${x0 + half},${topBaseline}`
-    );
-    top.push(
-      `C${x0 + half + half / 3},${topBaseline + amplitude} ${x0 + half + (half * 2) / 3},${topBaseline + amplitude} ${x0 + period},${topBaseline}`
-    );
-  }
-
-  const bottomBaseline = topBaseline + thickness;
-  const bottom: string[] = [`L${width},${bottomBaseline}`];
-  for (let i = periods - 1; i >= 0; i--) {
-    const x0 = i * period;
-    bottom.push(
-      `C${x0 + half + (half * 2) / 3},${bottomBaseline + amplitude} ${x0 + half + half / 3},${bottomBaseline + amplitude} ${x0 + half},${bottomBaseline}`
-    );
-    bottom.push(
-      `C${x0 + (half * 2) / 3},${bottomBaseline - amplitude} ${x0 + half / 3},${bottomBaseline - amplitude} ${x0},${bottomBaseline}`
-    );
-  }
-
-  return `${top.join(" ")} ${bottom.join(" ")} Z`;
+  return order
+    .map((i) => {
+      const x0 = i * period;
+      if (direction === "forward") {
+        return (
+          `C${x0 + half / 3},${baseline - amplitude} ${x0 + (half * 2) / 3},${baseline - amplitude} ${x0 + half},${baseline}` +
+          ` C${x0 + half + half / 3},${baseline + amplitude} ${x0 + half + (half * 2) / 3},${baseline + amplitude} ${x0 + period},${baseline}`
+        );
+      }
+      return (
+        `C${x0 + half + (half * 2) / 3},${baseline + amplitude} ${x0 + half + half / 3},${baseline + amplitude} ${x0 + half},${baseline}` +
+        ` C${x0 + (half * 2) / 3},${baseline - amplitude} ${x0 + half / 3},${baseline - amplitude} ${x0},${baseline}`
+      );
+    })
+    .join(" ");
 }
 
-const WAVE_PATH_D = buildWavePath(
+/**
+ * Construye el "d" de un <Path> que rellena de y=0 hasta la curva ondulada:
+ * es el fondo oscuro del encabezado, con el borde inferior en forma de ola.
+ */
+function buildHeaderCapPath(width: number, baseline: number, amplitude: number, periods: number): string {
+  return `M0,0 L${width},0 L${width},${baseline} ${traceWave(width, baseline, amplitude, periods, "backward")} Z`;
+}
+
+/**
+ * Construye el "d" de un <Path> que dibuja una cinta ondulada (ancho fijo,
+ * grosor constante): la franja amarilla entre el fondo oscuro y el cuerpo
+ * blanco. Su borde superior es la misma curva que el borde inferior del
+ * fondo oscuro (buildHeaderCapPath), por lo que quedan contiguas sin huecos.
+ */
+function buildWaveRibbonPath(
+  width: number,
+  baseline: number,
+  thickness: number,
+  amplitude: number,
+  periods: number
+): string {
+  const bottomBaseline = baseline + thickness;
+  return (
+    `M0,${baseline} ${traceWave(width, baseline, amplitude, periods, "forward")}` +
+    ` L${width},${bottomBaseline} ${traceWave(width, bottomBaseline, amplitude, periods, "backward")} Z`
+  );
+}
+
+const HEADER_CAP_PATH_D = buildHeaderCapPath(
   WAVE_VIEWBOX_WIDTH,
+  WAVE_BASELINE,
+  WAVE_AMPLITUDE,
+  WAVE_PERIODS
+);
+
+const WAVE_RIBBON_PATH_D = buildWaveRibbonPath(
+  WAVE_VIEWBOX_WIDTH,
+  WAVE_BASELINE,
   WAVE_THICKNESS,
   WAVE_AMPLITUDE,
   WAVE_PERIODS
@@ -85,21 +120,23 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
     backgroundColor: "#ffffff",
   },
-  header: {
-    height: HEADER_HEIGHT,
-    backgroundColor: COLORS.dark,
+  headerZone: {
+    height: HEADER_ZONE_HEIGHT,
+    position: "relative",
+  },
+  headerSvg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: HEADER_ZONE_HEIGHT,
+  },
+  headerContent: {
     color: "#ffffff",
     padding: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-  },
-  wave: {
-    position: "absolute",
-    top: HEADER_HEIGHT - WAVE_VIEWBOX_HEIGHT / 2,
-    left: 0,
-    width: "100%",
-    height: WAVE_VIEWBOX_HEIGHT,
   },
   companyBlock: { flexDirection: "row", alignItems: "center" },
   logoPlaceholder: {
@@ -206,21 +243,32 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View style={styles.companyBlock}>
-            <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoPlaceholderText}>TF</Text>
+        <View style={styles.headerZone}>
+          <Svg
+            style={styles.headerSvg}
+            viewBox={`0 0 ${WAVE_VIEWBOX_WIDTH} ${HEADER_ZONE_HEIGHT}`}
+            preserveAspectRatio="none"
+          >
+            <Path d={HEADER_CAP_PATH_D} fill={COLORS.dark} />
+            <Path d={WAVE_RIBBON_PATH_D} fill={COLORS.yellow} />
+          </Svg>
+
+          <View style={styles.headerContent}>
+            <View style={styles.companyBlock}>
+              <View style={styles.logoPlaceholder}>
+                <Text style={styles.logoPlaceholderText}>TF</Text>
+              </View>
+              <View>
+                <Text style={styles.companyName}>{EMPRESA.nombre}</Text>
+                <Text style={styles.companyTagline}>{EMPRESA.tagline}</Text>
+              </View>
             </View>
-            <View>
-              <Text style={styles.companyName}>{EMPRESA.nombre}</Text>
-              <Text style={styles.companyTagline}>{EMPRESA.tagline}</Text>
+            <View style={styles.contactBlock}>
+              <Text style={styles.contactLine}>{EMPRESA.direccion}</Text>
+              <Text style={styles.contactLine}>{EMPRESA.telefono}</Text>
+              <Text style={styles.contactLine}>{EMPRESA.correo}</Text>
+              <Text style={styles.contactLine}>{formatFecha(fecha)}</Text>
             </View>
-          </View>
-          <View style={styles.contactBlock}>
-            <Text style={styles.contactLine}>{EMPRESA.direccion}</Text>
-            <Text style={styles.contactLine}>{EMPRESA.telefono}</Text>
-            <Text style={styles.contactLine}>{EMPRESA.correo}</Text>
-            <Text style={styles.contactLine}>{formatFecha(fecha)}</Text>
           </View>
         </View>
 
@@ -297,17 +345,6 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
         </View>
 
         <Text style={styles.footer}>{EMPRESA.tagline}</Text>
-
-        <View style={styles.wave}>
-          <Svg
-            width="100%"
-            height={WAVE_VIEWBOX_HEIGHT}
-            viewBox={`0 0 ${WAVE_VIEWBOX_WIDTH} ${WAVE_VIEWBOX_HEIGHT}`}
-            preserveAspectRatio="none"
-          >
-            <Path d={WAVE_PATH_D} fill={COLORS.yellow} />
-          </Svg>
-        </View>
       </Page>
     </Document>
   );
