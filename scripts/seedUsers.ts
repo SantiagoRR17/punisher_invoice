@@ -15,7 +15,7 @@ import type { User, UserRole } from "../models/User";
 
 loadEnv({ path: ".env.local" });
 
-const VALID_ROLES: UserRole[] = ["dueno", "contadora"];
+const VALID_ROLES: UserRole[] = ["jefe", "contadora"];
 
 function parseArgs(argv: string[]) {
   const args: Record<string, string> = {};
@@ -37,7 +37,7 @@ async function main() {
 
   if (!username || !password || !role) {
     console.error(
-      "Uso: pnpm run seed:users -- --username <usuario> --password <password> --role dueno|contadora"
+      "Uso: pnpm run seed:users -- --username <usuario> --password <password> --role jefe|contadora"
     );
     process.exit(1);
   }

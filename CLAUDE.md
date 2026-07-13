@@ -22,6 +22,7 @@ Actúa como analista de sistemas y desarrollador senior con experiencia en SDD (
 8. Usa la documentación existente como fuente de verdad y no introduzcas cambios que contradigan la constitución.
 9. Si hay inconsistencias entre archivos, corrígelas solo si afectan la feature en curso y explica qué cambiaste.
 10. Cuando termines una feature, actualiza su documentación, sus tareas y el roadmap si aplica.
+11. Se debera documentar en la carpeta 'DOCS' todos los errores ejecutados e identificados durante la sesión de trabajo, especificando su causa y solución, se genera un .md independiente por feature.
 
 ## Política de commits
 

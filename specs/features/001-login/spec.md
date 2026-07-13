@@ -1,6 +1,6 @@
 # **001 · Login**
 
-**Estado:** implementada, pendiente de validación del usuario
+**Estado:** Hecho ✅ (validada por el usuario contra MongoDB Atlas real)
 
 ## Qué hace
 
@@ -14,7 +14,7 @@ Esta feature protege el acceso al sistema y evita que personas no autorizadas ve
 
 - [x] muestra un formulario de acceso con usuario y contraseña
 - [x] aplica un estilo visual tipo glassmorphism sin afectar la legibilidad
-- [x] valida las credenciales contra la base de datos (probado contra Mongo Memory Server; conexión real a Atlas pendiente, ver "Fuera de alcance")
+- [x] valida las credenciales contra la base de datos (probado contra Mongo Memory Server en pruebas automatizadas y validado por el usuario contra MongoDB Atlas real)
 - [x] redirecciona al menú principal cuando la autenticación es correcta (destino `/menu` es un placeholder de la feature 002)
 - [x] muestra un mensaje de error cuando el usuario o la contraseña son inválidos
 - [x] funciona de forma responsive en escritorio y dispositivos móviles
@@ -24,7 +24,7 @@ Esta feature protege el acceso al sistema y evita que personas no autorizadas ve
 - No incluye registro de usuarios.
 - No incluye recuperación de contraseña.
 - No incluye administración de roles desde interfaz.
-- No incluye conexión a una base de datos MongoDB Atlas real: por ahora solo se deja documentada la variable de entorno esperada (`.env.local.example`) y la validación se cubre con pruebas usando una base en memoria. La conexión real a Atlas se configura más adelante, fuera de esta feature.
+- La conexión a MongoDB Atlas ya quedó configurada y validada por el usuario (variables reales en `.env.local`, no versionadas).
 
 ## Provisión de usuarios autorizados
 

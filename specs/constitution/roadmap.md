@@ -6,17 +6,16 @@ _Orden y estado de las features. Cada entrada apunta a su carpeta en `features/`
 
 _Features completadas, en orden de implementación._
 
-1. Ninguna aún.
+1. **001 · Login** — Autenticación restringida para permitir el acceso a usuarios autorizados.
 
 ## Siguiente 🔜
 
 _Lo próximo a abordar. Idealmente una sola feature "en curso" a la vez._
 
-1. **001 · Login** — Autenticación restringida para permitir el acceso a usuarios autorizados.
-2. **002 · Menú principal** — Pantalla principal para acceder a cotización y cuenta de cobro.
-3. **003 · Formulario Cotización** — Formulario para generar cotizaciones y exportarlas a PDF.
-4. **004 · Formulario Cuenta de cobro** — Formulario para generar cuentas de cobro, controlar consecutivo, abonos y saldo.
-5. **005 · Historial de cuentas de cobro** — Consulta del histórico y descarga de documentos generados.
+1. **002 · Menú principal** — Pantalla principal para acceder a cotización y cuenta de cobro.
+2. **003 · Formulario Cotización** — Formulario para generar cotizaciones y exportarlas a PDF.
+3. **004 · Formulario Cuenta de cobro** — Formulario para generar cuentas de cobro, controlar consecutivo, abonos y saldo.
+4. **005 · Historial de cuentas de cobro** — Consulta del histórico y descarga de documentos generados.
 
 ## Backlog / ideas 💡
 
