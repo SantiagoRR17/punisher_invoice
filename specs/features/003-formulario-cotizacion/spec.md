@@ -1,6 +1,6 @@
 # **003 · Formulario Cotización**
 
-**Estado:** implementada, pendiente de validación del usuario
+**Estado:** Hecho ✅
 
 ## Qué hace
 
