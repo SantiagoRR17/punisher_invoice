@@ -11,7 +11,7 @@ function getClientPromise(): Promise<MongoClient> {
   }
 
   if (!cachedClientPromise) {
-    const client = new MongoClient(uri);
+    const client = new MongoClient(uri, { family: 4 });
     cachedClientPromise = client.connect();
   }
 
