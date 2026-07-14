@@ -17,3 +17,11 @@ Bitácora de los problemas encontrados al implementar la feature `005-historial-
 **Cómo se generó:** Esta vez se verificó con `ps aux` que no había ningún proceso `node`/`next` propio corriendo, por lo que el puerto lo tenía ocupado el propio entorno de desarrollo del usuario (ver bitácoras anteriores para el mismo patrón).
 
 **Cómo se corrigió:** El usuario liberó el puerto y se volvieron a ejecutar las pruebas sin problema. No fue necesario ningún cambio en el proyecto.
+
+## 3. La tabla del historial y la tabla de ítems del detalle no eran usables en móvil
+
+**Qué pasó:** El usuario reportó, tras QA manual desde el celular, que el historial "no cargaba bien" en móvil. `components/HistorialList.module.css` tenía la tabla principal (`.table`, `min-width: 720px`) y la tabla de ítems del detalle expandido (`.itemsTable`) sin adaptación para pantallas angostas; además el formulario de registrar abono (`.abonoForm`) y los filtros (`.filters`) no se reacomodaban bien por debajo de ~360px de ancho.
+
+**Cómo se generó:** Igual que en los formularios de cotización y cuenta de cobro (ver bitácoras de las features 003 y 004), el `overflow-x: auto` sirve para tablas anchas de solo lectura, pero no resuelve que el contenido quede legible sin scroll horizontal en una pantalla de celular.
+
+**Cómo se corrigió:** Se agregó una regla `@media (max-width: 640px)` en `HistorialList.module.css` que: (1) convierte la tabla principal y la tabla de ítems del detalle en tarjetas apiladas por fila, con rótulos `::before` vía `attr(data-label)`; (2) apila los filtros (`.filters`) y el formulario de abono (`.abonoForm`) en columna; (3) hace los botones de acción de ancho completo. En `components/HistorialList.tsx` se agregó el atributo `data-label` a cada `<td>` de ambas tablas.

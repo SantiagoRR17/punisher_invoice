@@ -17,3 +17,11 @@ Bitácora de los problemas encontrados al implementar la feature `003-formulario
 **Cómo se generó:** En ambos casos el puerto ya estaba ocupado por procesos externos del propio usuario (una ventana de VS Code con su extensión/servidor integrado, y en otra ocasión un entorno de desarrollo que el usuario tenía abierto), no por un problema del código o la configuración del proyecto.
 
 **Cómo se corrigió:** No fue necesario cambiar nada en el proyecto. El usuario liberó el puerto 3000 y se volvieron a ejecutar los comandos sin problema. Es la misma situación ya documentada en la bitácora de la feature 002 (`DOCS/002-menu-principal-errores-implementacion.md`, punto 2); se repite aquí porque volvió a ocurrir en esta sesión.
+
+## 3. La tabla de ítems obligaba a hacer scroll horizontal para llenar el formulario en móvil
+
+**Qué pasó:** El usuario reportó, tras QA manual desde el celular, que "no cargan bien los formularios desde móvil". La tabla de ítems (`components/CotizacionForm.module.css`, clase `.table`) tenía `min-width: 640px` dentro de un `.tableWrapper` con `overflow-x: auto`. En pantallas angostas eso obliga a desplazarse lateralmente para ver y llenar cada campo (descripción, cantidad, valor unitario) de cada ítem, en vez de que el formulario se acomode al ancho disponible.
+
+**Cómo se generó:** El wrapper con scroll horizontal es una solución razonable para *ver* tablas de datos anchas, pero aquí la tabla contiene controles de formulario (`textarea`, `input`) que el usuario necesita completar, no solo leer; forzar scroll horizontal mientras se escribe es mala experiencia en móvil.
+
+**Cómo se corrigió:** Se agregó una regla `@media (max-width: 640px)` en `CotizacionForm.module.css` que convierte cada fila de la tabla de ítems en una tarjeta apilada (`display: block` en tabla/fila/celda, encabezado `<thead>` oculto visualmente y reemplazado por un rótulo `::before` con `attr(data-label)` en cada celda). En `components/CotizacionForm.tsx` se agregó el atributo `data-label` a cada `<td>` de la tabla de ítems. El cambio se acotó exclusivamente a esa sección de ítems; el resto del formulario ("Datos del cliente") no se tocó.

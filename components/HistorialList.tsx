@@ -221,12 +221,12 @@ export default function HistorialList() {
                 return (
                   <Fragment key={cuenta.consecutivo}>
                     <tr>
-                      <td>{cuenta.consecutivo}</td>
-                      <td>{cuenta.cliente.nombre}</td>
-                      <td>{formatFechaCorta(cuenta.fecha)}</td>
-                      <td>{formatCurrencyCOP(cuenta.total)}</td>
-                      <td>{formatCurrencyCOP(cuenta.saldo)}</td>
-                      <td>
+                      <td data-label="Consecutivo">{cuenta.consecutivo}</td>
+                      <td data-label="Cliente">{cuenta.cliente.nombre}</td>
+                      <td data-label="Fecha">{formatFechaCorta(cuenta.fecha)}</td>
+                      <td data-label="Total">{formatCurrencyCOP(cuenta.total)}</td>
+                      <td data-label="Saldo">{formatCurrencyCOP(cuenta.saldo)}</td>
+                      <td data-label="Estado">
                         <span className={pagada ? styles.badgePagada : styles.badgePendiente}>
                           {pagada ? "Pagada" : "Pendiente"}
                         </span>
@@ -267,10 +267,14 @@ export default function HistorialList() {
                               <tbody>
                                 {cuenta.items.map((item, index) => (
                                   <tr key={index}>
-                                    <td>{item.descripcion}</td>
-                                    <td>{item.cantidad}</td>
-                                    <td>{formatCurrencyCOP(item.valorUnitario)}</td>
-                                    <td>{formatCurrencyCOP(item.cantidad * item.valorUnitario)}</td>
+                                    <td data-label="Descripción">{item.descripcion}</td>
+                                    <td data-label="Cantidad">{item.cantidad}</td>
+                                    <td data-label="Valor unitario">
+                                      {formatCurrencyCOP(item.valorUnitario)}
+                                    </td>
+                                    <td data-label="Valor total">
+                                      {formatCurrencyCOP(item.cantidad * item.valorUnitario)}
+                                    </td>
                                   </tr>
                                 ))}
                               </tbody>

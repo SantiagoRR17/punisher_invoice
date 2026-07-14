@@ -221,3 +221,116 @@
   color: #1a7a3c;
   font-size: 0.85rem;
 }
+
+@media (max-width: 640px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchInput {
+    min-width: 0;
+  }
+
+  .estadoOptions {
+    flex-wrap: wrap;
+  }
+
+  .tableWrapper {
+    overflow-x: visible;
+    border: none;
+    background: transparent;
+  }
+
+  .table,
+  .itemsTable {
+    min-width: 0;
+  }
+
+  .table thead,
+  .itemsTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .table,
+  .table tbody,
+  .table tr,
+  .table td,
+  .itemsTable,
+  .itemsTable tbody,
+  .itemsTable tr,
+  .itemsTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .table > tbody > tr {
+    margin-bottom: 1rem;
+    background: #ffffff;
+    border: 1px solid rgba(27, 42, 49, 0.15);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .table td {
+    padding: 0.35rem 0;
+    border-bottom: none;
+  }
+
+  .table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .detailCell {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .itemsTable tr {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(27, 42, 49, 0.1);
+  }
+
+  .itemsTable td {
+    padding: 0.25rem 0;
+    border-bottom: none;
+  }
+
+  .itemsTable td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+  }
+
+  .abonoForm {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .numberInput {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .secondaryButton,
+  .primaryButton {
+    width: 100%;
+  }
+}

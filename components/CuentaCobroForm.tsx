@@ -289,7 +289,7 @@ export default function CuentaCobroForm() {
             <tbody>
               {items.map((item, index) => (
                 <tr key={item.id}>
-                  <td>
+                  <td data-label="Descripción">
                     <textarea
                       className={styles.textarea}
                       aria-label={`Descripción del ítem ${index + 1}`}
@@ -298,7 +298,7 @@ export default function CuentaCobroForm() {
                       rows={2}
                     />
                   </td>
-                  <td>
+                  <td data-label="Cantidad">
                     <input
                       className={styles.numberInput}
                       aria-label={`Cantidad del ítem ${index + 1}`}
@@ -308,7 +308,7 @@ export default function CuentaCobroForm() {
                       onChange={(event) => updateItem(item.id, "cantidad", event.target.value)}
                     />
                   </td>
-                  <td>
+                  <td data-label="Valor unitario">
                     <input
                       className={styles.numberInput}
                       aria-label={`Valor unitario del ítem ${index + 1}`}
@@ -320,8 +320,10 @@ export default function CuentaCobroForm() {
                       }
                     />
                   </td>
-                  <td className={styles.rowTotal}>{formatCurrencyCOP(rowTotal(item))}</td>
-                  <td>
+                  <td className={styles.rowTotal} data-label="Valor total">
+                    {formatCurrencyCOP(rowTotal(item))}
+                  </td>
+                  <td className={styles.actionCell}>
                     <button
                       type="button"
                       className={styles.removeButton}
