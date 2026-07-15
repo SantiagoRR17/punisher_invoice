@@ -19,14 +19,12 @@ function isValidCliente(cliente: unknown): cliente is ClienteCotizacion {
     c.nombre.trim().length > 0 &&
     c.nombre.length <= MAX_TEXTO &&
     typeof c.cedula === "string" &&
-    c.cedula.trim().length > 0 &&
     c.cedula.length <= MAX_TEXTO &&
     typeof c.direccion === "string" &&
-    c.direccion.trim().length > 0 &&
     c.direccion.length <= MAX_TEXTO &&
-    typeof c.barrio === "string" &&
-    c.barrio.trim().length > 0 &&
-    c.barrio.length <= MAX_TEXTO
+    typeof c.celular === "string" &&
+    c.celular.trim().length > 0 &&
+    c.celular.length <= MAX_TEXTO
   );
 }
 

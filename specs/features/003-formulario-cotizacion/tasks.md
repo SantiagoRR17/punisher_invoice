@@ -15,6 +15,8 @@ _Checklist accionable derivada del `plan.md`. Tareas pequeñas y concretas; marc
 - [x] Validar contra los criterios de aceptación de `spec.md`.
 - [x] Mover la feature a "Hecho" en `../../constitution/roadmap.md`.
 
+- [x] Reemplazar el campo `barrio` por `celular` en el modelo, el formulario y el PDF; reducir los campos obligatorios a nombre y celular (petición del cliente, ver `DOCS/003-formulario-cotizacion-errores-implementacion.md`).
+
 ## Mantenimiento (checklist recurrente)
 
 _Opcional. Pasos a repetir cada vez que se toque esta feature en el futuro (revisar datos, regenerar algo, etc.). Borra esta sección si no aplica._

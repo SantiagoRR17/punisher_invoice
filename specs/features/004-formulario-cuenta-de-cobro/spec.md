@@ -24,7 +24,8 @@ Formato `CC-{año}-{secuencial}` (ej. `CC-2026-0001`), con el secuencial reinici
 ## Criterios de aceptación
 
 - [x] asigna un consecutivo único a cada cuenta de cobro con el formato `CC-{año}-{secuencial}`
-- [x] permite registrar datos del cliente y una tabla de ítems cobrados
+- [x] permite registrar datos del cliente (tratamiento, nombre, cédula, dirección, celular) y una tabla de ítems cobrados
+- [x] exige únicamente nombre y celular del cliente como obligatorios; cédula y dirección se aceptan vacíos (validado en formulario y en el API)
 - [x] calcula automáticamente el total general de la cuenta
 - [x] permite seleccionar un abono inicial de 50%, 60%, un valor manual, o ninguno
 - [x] calcula el saldo pendiente con base en el total y el abono inicial
@@ -42,4 +43,4 @@ Formato `CC-{año}-{secuencial}` (ej. `CC-2026-0001`), con el secuencial reinici
 - No incluye marcar una cuenta como pagada ni registrar abonos posteriores a la creación (feature 005).
 - No incluye eliminación del consecutivo.
 - No incluye acceso público sin autenticación.
-- Los assets reales de marca (logo, firma, ícono) siguen sin existir en `public/`: se reutilizan los mismos placeholders de la feature 003.
+- Los assets reales de marca (logo, firma, ícono) siguen sin existir en `public/`: se reutilizan los mismos placeholders de la feature 003. Ver feature `006-mejoras-visuales-pdf` para el reemplazo de esos placeholders.

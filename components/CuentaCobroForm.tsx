@@ -19,7 +19,7 @@ interface ClienteFormState {
   nombre: string;
   cedula: string;
   direccion: string;
-  barrio: string;
+  celular: string;
 }
 
 interface ParsedItem {
@@ -46,7 +46,7 @@ export default function CuentaCobroForm() {
     nombre: "",
     cedula: "",
     direccion: "",
-    barrio: "",
+    celular: "",
   });
   const [items, setItems] = useState<ItemRow[]>(() => [createEmptyRow()]);
   const [tipoAbono, setTipoAbono] = useState<TipoAbono>("ninguno");
@@ -94,9 +94,7 @@ export default function CuentaCobroForm() {
     const newErrors: string[] = [];
 
     if (!cliente.nombre.trim()) newErrors.push("El nombre del cliente es obligatorio.");
-    if (!cliente.cedula.trim()) newErrors.push("La cédula del cliente es obligatoria.");
-    if (!cliente.direccion.trim()) newErrors.push("La dirección del cliente es obligatoria.");
-    if (!cliente.barrio.trim()) newErrors.push("El barrio del cliente es obligatorio.");
+    if (!cliente.celular.trim()) newErrors.push("El celular del cliente es obligatorio.");
 
     const parsedItems: ParsedItem[] = [];
     items.forEach((item, index) => {
@@ -261,12 +259,12 @@ export default function CuentaCobroForm() {
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>Barrio</span>
+            <span className={styles.label}>Celular</span>
             <input
               className={styles.input}
               type="text"
-              value={cliente.barrio}
-              onChange={(event) => updateCliente("barrio", event.target.value)}
+              value={cliente.celular}
+              onChange={(event) => updateCliente("celular", event.target.value)}
             />
           </label>
         </div>

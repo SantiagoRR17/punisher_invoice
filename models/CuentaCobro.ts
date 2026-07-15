@@ -5,7 +5,7 @@ export interface ClienteCuentaCobro {
   nombre: string;
   cedula: string;
   direccion: string;
-  barrio: string;
+  celular: string;
 }
 
 export interface ItemCuentaCobro {

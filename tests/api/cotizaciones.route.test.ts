@@ -26,7 +26,7 @@ const cliente = {
   nombre: "Carlos Pérez",
   cedula: "1.234.567",
   direccion: "Cl 10 #5 20",
-  barrio: "Centro",
+  celular: "300 123 4567",
 };
 
 const sesionValida = {

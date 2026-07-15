@@ -117,7 +117,7 @@ export default function CuentaCobroPdf({ cuenta }: CuentaCobroPdfProps) {
               <Text style={[styles.clienteText, styles.clienteNombre]}>{cliente.nombre}</Text>
               <Text style={styles.clienteText}>CC {cliente.cedula}</Text>
               <Text style={styles.clienteText}>{cliente.direccion}</Text>
-              <Text style={styles.clienteText}>Barrio {cliente.barrio}</Text>
+              <Text style={styles.clienteText}>Cel. {cliente.celular}</Text>
             </View>
             <View>
               <Text style={styles.title}>CUENTA DE COBRO</Text>

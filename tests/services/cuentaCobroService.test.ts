@@ -26,7 +26,7 @@ const cliente = {
   nombre: "Nohora Stella Coronado",
   cedula: "51.607.476",
   direccion: "Cl 74a #78 16",
-  barrio: "Tabora",
+  celular: "300 123 4567",
 };
 
 describe("saveCuentaCobro", () => {

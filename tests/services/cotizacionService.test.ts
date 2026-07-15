@@ -24,7 +24,7 @@ describe("saveCotizacion", () => {
         nombre: "Nohora Stella Coronado",
         cedula: "51.607.476",
         direccion: "Cl 74a #78 16",
-        barrio: "Tabora",
+        celular: "300 123 4567",
       },
       items: [{ descripcion: "Portón levadizo de 320x230", cantidad: 1, valorUnitario: 8900000 }],
       fecha: new Date("2026-05-16"),

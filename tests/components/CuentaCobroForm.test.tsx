@@ -32,7 +32,7 @@ async function fillCliente(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText("Nombre completo"), "Nohora Stella Coronado");
   await user.type(screen.getByLabelText("Cédula"), "51607476");
   await user.type(screen.getByLabelText("Dirección"), "Cl 74a #78 16");
-  await user.type(screen.getByLabelText("Barrio"), "Tabora");
+  await user.type(screen.getByLabelText("Celular"), "300 123 4567");
 }
 
 describe("CuentaCobroForm", () => {

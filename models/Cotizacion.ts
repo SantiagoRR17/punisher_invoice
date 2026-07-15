@@ -5,7 +5,7 @@ export interface ClienteCotizacion {
   nombre: string;
   cedula: string;
   direccion: string;
-  barrio: string;
+  celular: string;
 }
 
 export interface ItemCotizacion {

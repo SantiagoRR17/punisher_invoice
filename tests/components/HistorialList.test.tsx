@@ -22,7 +22,7 @@ const cuentaPendiente = {
     nombre: "Nohora Stella Coronado",
     cedula: "51.607.476",
     direccion: "Cl 74a #78 16",
-    barrio: "Tabora",
+    celular: "300 123 4567",
   },
   items: [{ descripcion: "Mantenimiento", cantidad: 1, valorUnitario: 1000 }],
   total: 1000,
