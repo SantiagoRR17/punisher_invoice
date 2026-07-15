@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "seed:users": "tsx scripts/seedUsers.ts"
+    "seed:users": "tsx scripts/seedUsers.ts",
+    "upload:brand-asset": "tsx scripts/uploadBrandAsset.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.5.1",

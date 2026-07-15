@@ -1,10 +1,11 @@
-import { View, Text, Svg, Path, StyleSheet } from "@react-pdf/renderer";
+import { View, Text, Svg, Path, Image, StyleSheet } from "@react-pdf/renderer";
 import {
   HEADER_CAP_PATH_D,
   WAVE_RIBBON_PATH_D,
   WAVE_VIEWBOX_WIDTH,
   HEADER_ZONE_HEIGHT,
 } from "./pdfWave";
+import { IconDireccion, IconTelefono, IconCorreo, IconFecha } from "./pdfIcons";
 
 export const COLORS = {
   dark: "#1b2a31",
@@ -13,11 +14,6 @@ export const COLORS = {
   textMuted: "#4b5b62",
 };
 
-/**
- * Placeholder de marca: no existen todavía los archivos reales de logo,
- * firma e ícono de soldador en public/ (ver DOCS/003-formulario-cotizacion.md).
- * Reemplazar por Image de @react-pdf/renderer cuando estén disponibles.
- */
 export const EMPRESA = {
   nombre: "EL TALLER DEL SOLDADOR",
   tagline: "SOLUCIONES METÁLICAS CON CALIDAD, FUERZA Y COMPROMISO",
@@ -56,21 +52,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   companyBlock: { flexDirection: "row", alignItems: "center" },
-  logoPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.yellow,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  logoPlaceholderText: { color: COLORS.yellow, fontSize: 13, fontFamily: "Helvetica-Bold" },
+  logo: { width: 40, height: 40, marginRight: 10 },
   companyName: { fontSize: 13, fontFamily: "Helvetica-Bold" },
   companyTagline: { fontSize: 7, color: COLORS.yellow, marginTop: 2, maxWidth: 180 },
   contactBlock: { alignItems: "flex-end" },
-  contactLine: { fontSize: 8, marginBottom: 3 },
+  contactLine: { flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 3 },
+  contactText: { fontSize: 8 },
   footer: {
     marginTop: "auto",
     backgroundColor: COLORS.dark,
@@ -100,19 +87,29 @@ export function PdfHeader({ fecha }: PdfHeaderProps) {
 
       <View style={styles.headerContent}>
         <View style={styles.companyBlock}>
-          <View style={styles.logoPlaceholder}>
-            <Text style={styles.logoPlaceholderText}>TF</Text>
-          </View>
+          <Image src="/logo.png" style={styles.logo} />
           <View>
             <Text style={styles.companyName}>{EMPRESA.nombre}</Text>
             <Text style={styles.companyTagline}>{EMPRESA.tagline}</Text>
           </View>
         </View>
         <View style={styles.contactBlock}>
-          <Text style={styles.contactLine}>{EMPRESA.direccion}</Text>
-          <Text style={styles.contactLine}>{EMPRESA.telefono}</Text>
-          <Text style={styles.contactLine}>{EMPRESA.correo}</Text>
-          <Text style={styles.contactLine}>{formatFecha(fecha)}</Text>
+          <View style={styles.contactLine}>
+            <IconDireccion color="#ffffff" />
+            <Text style={styles.contactText}>{EMPRESA.direccion}</Text>
+          </View>
+          <View style={styles.contactLine}>
+            <IconTelefono color="#ffffff" />
+            <Text style={styles.contactText}>{EMPRESA.telefono}</Text>
+          </View>
+          <View style={styles.contactLine}>
+            <IconCorreo color="#ffffff" />
+            <Text style={styles.contactText}>{EMPRESA.correo}</Text>
+          </View>
+          <View style={styles.contactLine}>
+            <IconFecha color="#ffffff" />
+            <Text style={styles.contactText}>{formatFecha(fecha)}</Text>
+          </View>
         </View>
       </View>
     </View>

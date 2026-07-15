@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { formatCurrencyCOP } from "@/lib/currency";
+import { fetchFirmaDataUrl } from "@/lib/brandAssets";
 import type { TratamientoCliente } from "@/models/Cotizacion";
 import styles from "./CotizacionForm.module.css";
 
@@ -131,9 +132,10 @@ export default function CotizacionForm() {
       const data = (await response.json()) as { total: number };
       const fecha = new Date();
 
-      const [{ pdf }, { default: CotizacionPdf }] = await Promise.all([
+      const [{ pdf }, { default: CotizacionPdf }, firmaUrl] = await Promise.all([
         import("@react-pdf/renderer"),
         import("@/components/pdf/CotizacionPdf"),
+        fetchFirmaDataUrl(),
       ]);
 
       const blob = await pdf(
@@ -144,6 +146,7 @@ export default function CotizacionForm() {
             fecha,
             total: data.total,
           }}
+          firmaUrl={firmaUrl}
         />
       ).toBlob();
 

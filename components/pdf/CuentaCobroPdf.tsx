@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrencyCOP } from "@/lib/currency";
 import type { CuentaCobro } from "@/models/CuentaCobro";
 import { COLORS, PdfHeader, PdfFooter, formatFecha } from "./PdfBrand";
@@ -94,13 +94,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
+  signatureImage: { width: 160, height: 40, objectFit: "contain" },
 });
 
 interface CuentaCobroPdfProps {
   cuenta: Pick<CuentaCobro, "cliente" | "items" | "consecutivo" | "fecha" | "total" | "abonos" | "saldo">;
+  firmaUrl?: string;
 }
 
-export default function CuentaCobroPdf({ cuenta }: CuentaCobroPdfProps) {
+export default function CuentaCobroPdf({ cuenta, firmaUrl }: CuentaCobroPdfProps) {
   const { cliente, items, consecutivo, fecha, total, abonos, saldo } = cuenta;
   const abonoTotal = abonos.reduce((sum, abono) => sum + abono.valor, 0);
 
@@ -183,6 +185,7 @@ export default function CuentaCobroPdf({ cuenta }: CuentaCobroPdfProps) {
           </View>
 
           <View style={styles.signatureBlock}>
+            {firmaUrl && <Image src={firmaUrl} style={styles.signatureImage} />}
             <View style={styles.signaturePlaceholder}>
               <Text style={styles.signatureText}>EL TALLER DEL SOLDADOR</Text>
             </View>

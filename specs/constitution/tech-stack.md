@@ -25,7 +25,7 @@ _Mapa breve de dónde vive cada cosa. Solo lo que un recién llegado necesita pa
 - `models/` — Tipos e interfaces de TypeScript.
 - `services/` — Lógica de negocio y acceso a datos.
 - `hooks/` — Hooks personalizados de React.
-- `public/` — Recursos estáticos como logo, firma, iconos e imágenes.
+- `public/` — Recursos estáticos no sensibles: logo, iconos e imágenes. La firma (dato sensible) no vive aquí; se guarda en MongoDB (colección `brandAssets`, ver `features/006-mejoras-visuales-pdf/`) y nunca se commitea al repositorio.
 - `styles/` — Estilos globales y tokens visuales.
 - `tests/` — Pruebas unitarias, de integración y E2E.
 - `DOCS/` — Documentación funcional y técnica por pantalla o feature.

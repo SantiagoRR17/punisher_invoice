@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { formatCurrencyCOP } from "@/lib/currency";
+import { fetchFirmaDataUrl } from "@/lib/brandAssets";
 import type { TratamientoCliente } from "@/models/CuentaCobro";
 import styles from "./CuentaCobroForm.module.css";
 
@@ -169,9 +170,10 @@ export default function CuentaCobroForm() {
         fecha: string;
       };
 
-      const [{ pdf }, { default: CuentaCobroPdf }] = await Promise.all([
+      const [{ pdf }, { default: CuentaCobroPdf }, firmaUrl] = await Promise.all([
         import("@react-pdf/renderer"),
         import("@/components/pdf/CuentaCobroPdf"),
+        fetchFirmaDataUrl(),
       ]);
 
       const fecha = new Date(data.fecha);
@@ -186,6 +188,7 @@ export default function CuentaCobroForm() {
             abonos: validated.abonoInicial > 0 ? [{ valor: validated.abonoInicial, fecha }] : [],
             saldo: data.saldo,
           }}
+          firmaUrl={firmaUrl}
         />
       ).toBlob();
 

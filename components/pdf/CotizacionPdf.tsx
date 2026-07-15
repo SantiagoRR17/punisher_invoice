@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrencyCOP } from "@/lib/currency";
 import type { Cotizacion } from "@/models/Cotizacion";
 import { COLORS, PdfHeader, PdfFooter } from "./PdfBrand";
@@ -74,13 +74,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
+  signatureImage: { width: 160, height: 40, objectFit: "contain" },
 });
 
 interface CotizacionPdfProps {
   cotizacion: Pick<Cotizacion, "cliente" | "items" | "fecha" | "total">;
+  firmaUrl?: string;
 }
 
-export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
+export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfProps) {
   const { cliente, items, fecha, total } = cotizacion;
 
   return (
@@ -154,6 +156,7 @@ export default function CotizacionPdf({ cotizacion }: CotizacionPdfProps) {
           </View>
 
           <View style={styles.signatureBlock}>
+            {firmaUrl && <Image src={firmaUrl} style={styles.signatureImage} />}
             <View style={styles.signaturePlaceholder}>
               <Text style={styles.signatureText}>EL TALLER DEL SOLDADOR</Text>
             </View>

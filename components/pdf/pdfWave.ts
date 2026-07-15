@@ -1,8 +1,8 @@
 export const WAVE_VIEWBOX_WIDTH = 600;
 export const WAVE_BASELINE = 90;
-export const WAVE_AMPLITUDE = 7;
+export const WAVE_AMPLITUDE = 4;
 export const WAVE_THICKNESS = 9;
-export const WAVE_PERIODS = 3;
+export const WAVE_PERIODS = 1;
 export const HEADER_ZONE_HEIGHT = 112;
 
 /**

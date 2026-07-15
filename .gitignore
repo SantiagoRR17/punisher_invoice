@@ -43,6 +43,12 @@ DOCS/guia-estudio-proyecto.md
 # vercel
 .vercel
 
+# assets de marca sensibles: nunca se commitean, viven en MongoDB (brandAssets)
+# ver specs/features/006-mejoras-visuales-pdf/
+public/firma.png
+public/firma.jpg
+public/firma.jpeg
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

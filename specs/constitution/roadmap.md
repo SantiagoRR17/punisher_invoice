@@ -11,12 +11,13 @@ _Features completadas, en orden de implementación._
 3. **003 · Formulario Cotización** — Formulario para generar cotizaciones y exportarlas a PDF.
 4. **004 · Formulario Cuenta de cobro** — Formulario para generar cuentas de cobro, controlar consecutivo, abonos y saldo.
 5. **005 · Historial de cuentas de cobro** — Consulta del histórico y descarga de documentos generados.
+6. **006 · Mejoras visuales de PDF** — Iconos de contacto, logo real, ola única sutil y firma real (servida desde MongoDB, nunca pública en el repo) en los PDF de cotización y cuenta de cobro.
 
 ## Siguiente 🔜
 
 _Lo próximo a abordar. Idealmente una sola feature "en curso" a la vez._
 
-_Ninguna pendiente por ahora. Ver "Backlog / ideas" para posibles próximas features._
+1. **007 · Cambio de contraseña de usuario** — Habilitar una opción para que un usuario autenticado cambie su propia contraseña.
 
 ## Backlog / ideas 💡
 
