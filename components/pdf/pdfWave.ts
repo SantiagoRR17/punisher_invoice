@@ -82,3 +82,67 @@ export const WAVE_RIBBON_PATH_D = buildWaveRibbonPath(
   WAVE_AMPLITUDE,
   WAVE_PERIODS
 );
+
+// --- Onda vertical: divisor de paneles del encabezado (feature 007) ---
+
+export const PANEL_VIEWBOX_WIDTH = 600;
+export const PANEL_BASELINE_X = 360;
+export const PANEL_WAVE_AMPLITUDE = 18;
+export const PANEL_WAVE_PERIODS = 1;
+
+/**
+ * Igual que `traceWave` pero transpuesta: oscila en X a lo largo de Y, para
+ * trazar un divisor vertical (lado a lado) en vez de un borde horizontal.
+ */
+function tracePanelWave(height: number, baselineX: number, amplitude: number, periods: number): string {
+  const period = height / periods;
+  const half = period / 2;
+
+  return [...Array(periods).keys()]
+    .map((i) => {
+      const y0 = i * period;
+      return (
+        `C${baselineX - amplitude},${y0 + half / 3} ${baselineX - amplitude},${y0 + (half * 2) / 3} ${baselineX},${y0 + half}` +
+        ` C${baselineX + amplitude},${y0 + half + half / 3} ${baselineX + amplitude},${y0 + half + (half * 2) / 3} ${baselineX},${y0 + period}`
+      );
+    })
+    .join(" ");
+}
+
+/**
+ * Región oscura del encabezado (panel izquierdo), con el borde derecho
+ * ondulado en vez de recto.
+ */
+export function buildLeftPanelPath(
+  height: number,
+  baselineX: number,
+  amplitude: number,
+  periods: number
+): string {
+  return `M0,0 L${baselineX},0 ${tracePanelWave(height, baselineX, amplitude, periods)} L0,${height} Z`;
+}
+
+/**
+ * Región clara del encabezado (panel derecho). Comparte exactamente la misma
+ * curva que `buildLeftPanelPath`, así los dos paneles quedan contiguos sin
+ * huecos ni superposición.
+ */
+export function buildRightPanelPath(
+  width: number,
+  height: number,
+  baselineX: number,
+  amplitude: number,
+  periods: number
+): string {
+  return `M${width},0 L${baselineX},0 ${tracePanelWave(height, baselineX, amplitude, periods)} L${width},${height} Z`;
+}
+
+/** El trazo del filo metálico del divisor reutiliza la misma curva, sin relleno. */
+export function buildPanelDividerStrokePath(
+  height: number,
+  baselineX: number,
+  amplitude: number,
+  periods: number
+): string {
+  return `M${baselineX},0 ${tracePanelWave(height, baselineX, amplitude, periods)}`;
+}

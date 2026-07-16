@@ -1,7 +1,17 @@
 import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrencyCOP } from "@/lib/currency";
 import type { Cotizacion } from "@/models/Cotizacion";
-import { COLORS, PdfHeader, PdfFooter } from "./PdfBrand";
+import {
+  COLORS,
+  TABLE_HEADER,
+  TABLE_HIGHLIGHT,
+  EMPRESA,
+  PdfHeader,
+  PdfServiceBoxes,
+  PdfFooter,
+  formatFecha,
+  tableRowBackground,
+} from "./PdfBrand";
 
 const NOTAS = [
   "Cualquier trabajo, modificación o servicio adicional no contemplado dentro de los costos descritos en esta cotización será cobrado como un valor adicional.",
@@ -28,9 +38,12 @@ const styles = StyleSheet.create({
   clienteText: { fontSize: 9, marginBottom: 2 },
   clienteNombre: { fontFamily: "Helvetica-Bold" },
   title: { fontSize: 15, fontFamily: "Helvetica-Bold", textAlign: "right" },
+  metaRow: { flexDirection: "row", justifyContent: "flex-end", gap: 8, marginTop: 6 },
+  metaLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.accent },
+  metaValue: { fontSize: 8 },
   intro: { fontSize: 8, maxWidth: 220, textAlign: "right", color: COLORS.textMuted, marginTop: 6 },
   table: { marginTop: 8, borderWidth: 1, borderColor: COLORS.dark },
-  tableHeaderRow: { flexDirection: "row", backgroundColor: COLORS.dark },
+  tableHeaderRow: { flexDirection: "row", backgroundColor: TABLE_HEADER },
   tableHeaderCell: {
     color: "#ffffff",
     fontSize: 8,
@@ -44,7 +57,7 @@ const styles = StyleSheet.create({
   colCantidad: { width: "16%", textAlign: "center" },
   colValorUnitario: { width: "17%", textAlign: "right" },
   colValorTotal: { width: "17%", textAlign: "right" },
-  totalRow: { flexDirection: "row", backgroundColor: COLORS.dark },
+  totalRow: { flexDirection: "row", backgroundColor: TABLE_HIGHLIGHT },
   totalLabel: {
     width: "83%",
     color: "#ffffff",
@@ -55,8 +68,7 @@ const styles = StyleSheet.create({
   },
   totalValue: {
     width: "17%",
-    backgroundColor: COLORS.yellow,
-    color: COLORS.dark,
+    color: "#ffffff",
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
     padding: 6,
@@ -66,6 +78,8 @@ const styles = StyleSheet.create({
   noteLine: { fontSize: 7, marginBottom: 4, color: COLORS.textMuted },
   noteLabel: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
   signatureBlock: { marginTop: 24, alignItems: "flex-end" },
+  thanksLine: { fontSize: 8, color: COLORS.textMuted, textAlign: "right" },
+  thanksLineBold: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
   signaturePlaceholder: {
     width: 160,
     borderTopWidth: 1,
@@ -74,7 +88,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
-  signatureImage: { width: 160, height: 40, objectFit: "contain" },
+  signatureTitular: { fontSize: 7, color: COLORS.textMuted, marginTop: 1 },
+  signatureImage: { width: 160, height: 40, objectFit: "contain", marginTop: 6 },
 });
 
 interface CotizacionPdfProps {
@@ -88,7 +103,7 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <PdfHeader fecha={fecha} />
+        <PdfHeader />
 
         <View style={styles.body}>
           <View style={styles.titleRow}>
@@ -102,6 +117,10 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
             </View>
             <View>
               <Text style={styles.title}>COTIZACIÓN Y ORDEN DE TRABAJO</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>FECHA:</Text>
+                <Text style={styles.metaValue}>{formatFecha(fecha)}</Text>
+              </View>
               <Text style={styles.intro}>
                 De manera atenta y con base en su requerimiento, generamos la correspondiente
                 orden de trabajo con las siguientes características:
@@ -121,7 +140,10 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
             </View>
 
             {items.map((item, index) => (
-              <View key={index} style={styles.tableRow}>
+              <View
+                key={index}
+                style={[styles.tableRow, { backgroundColor: tableRowBackground(index) }]}
+              >
                 <Text style={[styles.tableCell, styles.colItem]}>{index + 1}</Text>
                 <Text style={[styles.tableCell, styles.colDescripcion]}>{item.descripcion}</Text>
                 <Text style={[styles.tableCell, styles.colCantidad]}>{item.cantidad}</Text>
@@ -156,13 +178,19 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
           </View>
 
           <View style={styles.signatureBlock}>
+            <Text style={styles.thanksLine}>Agradecemos su confianza.</Text>
+            <Text style={[styles.thanksLine, styles.thanksLineBold]}>
+              ¡Estamos para construir juntos!
+            </Text>
             {firmaUrl && <Image src={firmaUrl} style={styles.signatureImage} />}
             <View style={styles.signaturePlaceholder}>
               <Text style={styles.signatureText}>EL TALLER DEL SOLDADOR</Text>
+              <Text style={styles.signatureTitular}>{EMPRESA.titular}</Text>
             </View>
           </View>
         </View>
 
+        <PdfServiceBoxes />
         <PdfFooter />
       </Page>
     </Document>

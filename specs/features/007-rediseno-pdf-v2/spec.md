@@ -1,6 +1,6 @@
 # **007 · Rediseño de encabezado, tabla y pie de PDF (v2)**
 
-**Estado:** En curso 🔧
+**Estado:** Hecho ✅
 
 ## Qué hace
 
@@ -51,14 +51,14 @@ El cliente proporcionó una plantilla de referencia más elaborada (`template_mo
 
 ## Criterios de aceptación
 
-- [ ] El encabezado de cotización y cuenta de cobro muestra el panel oscuro (`#00293B`) a la izquierda y el panel claro (`#CDCDCF`) a la derecha, divididos por una onda (no un corte recto).
-- [ ] El panel derecho muestra teléfono, correo, dirección y NIT (ya no fecha), cada uno con su ícono.
-- [ ] La fecha aparece junto al título en ambos documentos.
-- [ ] La tabla de ítems alterna `#FEFEFE`/`#EDEEF0` en las filas de datos, con encabezado `#023145` y la fila destacada (SALDO PENDIENTE en cuenta de cobro, TOTAL en cotización) en `#04445D`.
-- [ ] El bloque de firma muestra, en orden: mensaje de agradecimiento, imagen de firma, línea, "EL TALLER DEL SOLDADOR" y "ERICK JULIAN DUEÑAS FORERO".
-- [ ] El pie muestra los 4 recuadros de servicios y la nueva tagline "CALIDAD EN CADA UNIÓN, COMPROMISO EN CADA PROYECTO".
-- [ ] La cuenta de cobro reserva un espacio de placeholder para el QR de pagos, visualmente distinguible como "pendiente".
-- [ ] Las pruebas existentes siguen pasando; no se rompe la descarga de PDF en ninguno de los dos documentos.
+- [x] El encabezado de cotización y cuenta de cobro muestra el panel oscuro (`#00293B`) a la izquierda y el panel claro (`#CDCDCF`) a la derecha, divididos por una onda (no un corte recto).
+- [x] El panel derecho muestra teléfono, correo, dirección y NIT (ya no fecha), cada uno con su ícono.
+- [x] La fecha aparece junto al título en ambos documentos.
+- [x] La tabla de ítems alterna `#FEFEFE`/`#EDEEF0` en las filas de datos, con encabezado `#023145` y la fila destacada (SALDO PENDIENTE en cuenta de cobro, TOTAL en cotización) en `#04445D`.
+- [x] El bloque de firma muestra, en orden: mensaje de agradecimiento, imagen de firma, línea, "EL TALLER DEL SOLDADOR" y "ERICK JULIAN DUEÑAS FORERO".
+- [x] El pie muestra los 4 recuadros de servicios y la nueva tagline "CALIDAD EN CADA UNIÓN, COMPROMISO EN CADA PROYECTO".
+- [x] La cuenta de cobro reserva un espacio de placeholder para el QR de pagos, visualmente distinguible como "pendiente".
+- [x] Las pruebas existentes siguen pasando (64/64) y no se rompe la descarga de PDF en ninguno de los dos documentos.
 
 ## Fuera de alcance
 
