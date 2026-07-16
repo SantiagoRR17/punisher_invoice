@@ -17,7 +17,8 @@ _Features completadas, en orden de implementación._
 
 _Lo próximo a abordar. Idealmente una sola feature "en curso" a la vez._
 
-1. **007 · Cambio de contraseña de usuario** — Habilitar una opción para que un usuario autenticado cambie su propia contraseña.
+1. **007 · Rediseño de encabezado, tabla y pie de PDF (v2)** — Encabezado de dos paneles con onda metálica, tabla con filas intercaladas, bloque de firma con mensaje y nombre del titular, recuadros de servicios y espacio para QR de pagos, siguiendo `template_model2.jpeg`.
+2. **008 · Cambio de contraseña de usuario** — Habilitar una opción para que un usuario autenticado cambie su propia contraseña.
 
 ## Backlog / ideas 💡
 
