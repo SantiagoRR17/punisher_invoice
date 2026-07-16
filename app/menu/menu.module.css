@@ -67,7 +67,20 @@
 .footer {
   margin-top: 0.5rem;
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profileLink {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.profileLink:hover,
+.profileLink:focus-visible {
+  color: #ffffff;
 }
 
 @media (max-width: 480px) {

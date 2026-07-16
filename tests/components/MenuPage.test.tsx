@@ -34,4 +34,13 @@ describe("MenuPage", () => {
       screen.getByRole("button", { name: /cerrar sesión/i })
     ).toBeInTheDocument();
   });
+
+  it("incluye el enlace para cambiar la contraseña", () => {
+    render(<MenuPage />);
+
+    expect(screen.getByRole("link", { name: /cambiar contraseña/i })).toHaveAttribute(
+      "href",
+      "/perfil"
+    );
+  });
 });

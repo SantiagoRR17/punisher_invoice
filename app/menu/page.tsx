@@ -22,6 +22,9 @@ export default function MenuPage() {
         </nav>
 
         <div className={styles.footer}>
+          <Link className={styles.profileLink} href="/perfil">
+            Cambiar contraseña
+          </Link>
           <LogoutButton />
         </div>
       </div>
