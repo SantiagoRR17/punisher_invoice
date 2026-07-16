@@ -1,6 +1,6 @@
 # **009 · Cambio de contraseña de usuario**
 
-**Estado:** Hecho ✅
+**Estado:** Hecho ✅ (validada por el usuario contra MongoDB Atlas real)
 
 ## Qué hace
 

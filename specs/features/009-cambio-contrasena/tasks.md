@@ -15,7 +15,7 @@ _Checklist accionable derivada del `plan.md`. Tareas pequeñas y concretas; marc
 - [x] `tests/e2e/perfil.spec.ts` (nuevo): redirige a `/login` sin sesión.
 - [x] `tests/components/MenuPage.test.tsx`: agregada una prueba para el nuevo enlace "Cambiar contraseña".
 - [x] Ejecutado `npx tsc --noEmit`, `npx eslint` sobre los archivos nuevos/modificados, y `pnpm run test` — 78/78 pasan.
-- [x] Verificación manual parcial: levantado `pnpm run dev` y verificado con `curl` que `/perfil` y `/menu` redirigen a `/login` sin sesión (comportamiento de solo lectura, sin tocar la base de datos). **No** se hizo la prueba completa iniciando sesión y cambiando la contraseña real, porque `.env.local` apunta a MongoDB Atlas de producción y hacerlo mutaría la contraseña de un usuario real sin supervisión del usuario del proyecto — ver `DOCS/009-cambio-contrasena-errores-implementacion.md`. El flujo completo sí está cubierto por `tests/services/passwordService.test.ts` y `tests/api/perfilPassword.route.test.ts` contra Mongo Memory Server.
+- [x] Verificación manual: desde esta sesión, solo se comprobó por `curl` (solo lectura) que `/perfil` y `/menu` redirigen a `/login` sin sesión, sin tocar la base de datos real — ver justificación en `DOCS/009-cambio-contrasena-errores-implementacion.md`. El usuario del proyecto hizo después la prueba completa (inicio de sesión real, cambio de contraseña) contra MongoDB Atlas y la confirmó como exitosa.
 - [x] Validado contra los criterios de aceptación de `spec.md`.
 - [x] Movida esta feature a "Hecho" en `specs/constitution/roadmap.md`.
 - [x] Documentado en `DOCS/009-cambio-contrasena.md` y `DOCS/009-cambio-contrasena-errores-implementacion.md`.

@@ -31,7 +31,7 @@ Documentación funcional y técnica de la feature 009. Ver también `specs/featu
 
 - No hay recuperación de contraseña para usuarios sin sesión ("olvidé mi contraseña") — sigue fuera de alcance, igual que en la feature 001.
 - No hay administración de usuarios (crear, eliminar, cambiar rol) desde interfaz — sigue siendo solo vía `pnpm run seed:users`.
-- La verificación manual completa del flujo (iniciar sesión real, cambiar la contraseña, confirmar que la nueva funciona) queda pendiente de que el usuario del proyecto la haga contra MongoDB Atlas, igual que se hizo para la feature 001 (login) — ver `DOCS/009-cambio-contrasena-errores-implementacion.md` para el detalle de por qué no se hizo desde esta sesión.
+- La verificación manual completa del flujo (iniciar sesión real, cambiar la contraseña, confirmar que la nueva funciona) la hizo el usuario del proyecto contra MongoDB Atlas y la confirmó como exitosa — ver `DOCS/009-cambio-contrasena-errores-implementacion.md` para el detalle de por qué esta sesión solo hizo una verificación de solo lectura.
 
 ## Errores previsibles
 
