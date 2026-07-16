@@ -9,12 +9,23 @@ import {
   PdfFooter,
   tableRowBackground,
 } from "./PdfBrand";
+import { IconBanco, IconWallet } from "./pdfIcons";
 
 const NOTAS = [
   "Cualquier trabajo, modificación o servicio adicional no contemplado dentro de los costos descritos en esta cotización será cobrado como un valor adicional.",
   "Abono del 50% al inicio del proyecto y el 50% al finalizar la entrega total.",
   "Plazo de entrega 20 días hábiles a partir del abono del 50%.",
 ];
+
+const FORMA_PAGO = [
+  {
+    Icon: IconBanco,
+    label: "DAVIVIENDA:",
+    detalle: "0570 4518 7009 3346 – Ahorros – a nombre de ERICK JULIAN DUEÑAS FORERO",
+  },
+  { Icon: IconWallet, label: "NEQUI:", detalle: "322 200 3921" },
+  { Icon: IconBanco, label: "Bre-B:", detalle: "322 200 3921" },
+] as const;
 
 const styles = StyleSheet.create({
   page: {
@@ -79,11 +90,56 @@ const styles = StyleSheet.create({
   notes: { marginTop: 16 },
   noteLine: { fontSize: 7, marginBottom: 4, color: COLORS.textMuted },
   noteLabel: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
-  signatureBlock: { marginTop: 24, alignItems: "flex-end" },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 16,
+  },
+  formaPago: { maxWidth: 220 },
+  formaPagoTitle: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.accent,
+    marginBottom: 6,
+  },
+  formaPagoRow: { flexDirection: "row", alignItems: "flex-start", gap: 6, marginBottom: 6 },
+  formaPagoBadge: {
+    width: 16,
+    height: 16,
+    borderRadius: 3,
+    backgroundColor: COLORS.dark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formaPagoLabel: { fontSize: 8, fontFamily: "Helvetica-Bold" },
+  formaPagoDetalle: { fontSize: 7.5, color: COLORS.textMuted, marginTop: 1, maxWidth: 180 },
+  qrBlock: { alignItems: "center" },
+  qrPlaceholder: {
+    width: 80,
+    height: 80,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: COLORS.textMuted,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 6,
+  },
+  qrPlaceholderText: { fontSize: 6.5, color: COLORS.textMuted, textAlign: "center" },
+  qrImage: { width: 80, height: 80, objectFit: "contain", borderWidth: 1, borderColor: COLORS.dark },
+  qrCaption: {
+    fontSize: 6.5,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.dark,
+    textAlign: "center",
+    marginTop: 4,
+    maxWidth: 90,
+  },
+  signatureBlock: { alignItems: "flex-end" },
   thanksLine: { fontSize: 8, color: COLORS.textMuted, textAlign: "right" },
   thanksLineBold: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
   signaturePlaceholder: {
-    width: 200,
+    width: 190,
     borderTopWidth: 1,
     borderTopColor: COLORS.dark,
     paddingTop: 4,
@@ -91,15 +147,16 @@ const styles = StyleSheet.create({
   },
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
   signatureTitular: { fontSize: 7, color: COLORS.textMuted, marginTop: 1 },
-  signatureImage: { width: 240, height: 120, objectFit: "contain", marginTop: 6 },
+  signatureImage: { width: 190, height: 95, objectFit: "contain", marginTop: 6 },
 });
 
 interface CotizacionPdfProps {
   cotizacion: Pick<Cotizacion, "cliente" | "items" | "fecha" | "total">;
   firmaUrl?: string;
+  qrUrl?: string;
 }
 
-export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfProps) {
+export default function CotizacionPdf({ cotizacion, firmaUrl, qrUrl }: CotizacionPdfProps) {
   const { cliente, items, fecha, total } = cotizacion;
 
   return (
@@ -175,15 +232,45 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
             </Text>
           </View>
 
-          <View style={styles.signatureBlock}>
-            <Text style={styles.thanksLine}>Agradecemos su confianza.</Text>
-            <Text style={[styles.thanksLine, styles.thanksLineBold]}>
-              ¡Estamos para construir juntos!
-            </Text>
-            {firmaUrl && <Image src={firmaUrl} style={styles.signatureImage} />}
-            <View style={styles.signaturePlaceholder}>
-              <Text style={styles.signatureText}>EL TALLER DEL SOLDADOR</Text>
-              <Text style={styles.signatureTitular}>{EMPRESA.titular}</Text>
+          <View style={styles.bottomRow}>
+            <View style={styles.formaPago}>
+              <Text style={styles.formaPagoTitle}>FORMA DE PAGO</Text>
+              {FORMA_PAGO.map(({ Icon, label, detalle }) => (
+                <View key={label} style={styles.formaPagoRow}>
+                  <View style={styles.formaPagoBadge}>
+                    <Icon color="#ffffff" size={9} />
+                  </View>
+                  <View>
+                    <Text style={styles.formaPagoLabel}>{label}</Text>
+                    <Text style={styles.formaPagoDetalle}>{detalle}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.qrBlock}>
+              {qrUrl ? (
+                <>
+                  <Image src={qrUrl} style={styles.qrImage} />
+                  <Text style={styles.qrCaption}>ESCANEA PARA PAGAR</Text>
+                </>
+              ) : (
+                <View style={styles.qrPlaceholder}>
+                  <Text style={styles.qrPlaceholderText}>QR de pagos próximamente</Text>
+                </View>
+              )}
+            </View>
+
+            <View style={styles.signatureBlock}>
+              <Text style={styles.thanksLine}>Agradecemos su confianza.</Text>
+              <Text style={[styles.thanksLine, styles.thanksLineBold]}>
+                ¡Será un gusto realizar tu proyecto juntos!
+              </Text>
+              {firmaUrl && <Image src={firmaUrl} style={styles.signatureImage} />}
+              <View style={styles.signaturePlaceholder}>
+                <Text style={styles.signatureText}>EL TALLER DEL SOLDADOR</Text>
+                <Text style={styles.signatureTitular}>{EMPRESA.titular}</Text>
+              </View>
             </View>
           </View>
         </View>

@@ -271,7 +271,7 @@ export default function CuentaCobroPdf({ cuenta, firmaUrl, qrUrl }: CuentaCobroP
             <View style={styles.signatureBlock}>
               <Text style={styles.thanksLine}>Agradecemos su confianza.</Text>
               <Text style={[styles.thanksLine, styles.thanksLineBold]}>
-                ¡Estamos para construir juntos!
+                ¡Fue un gusto realizar tu proyecto juntos!
               </Text>
               {firmaUrl && <Image src={firmaUrl} style={styles.signatureImage} />}
               <View style={styles.signaturePlaceholder}>
