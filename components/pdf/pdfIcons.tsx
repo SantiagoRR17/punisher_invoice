@@ -44,13 +44,46 @@ export function IconCorreo({ color, size = 9 }: PdfIconProps) {
   );
 }
 
-export function IconNit({ color, size = 9 }: PdfIconProps) {
+export function IconFecha({ color, size = 9 }: PdfIconProps) {
   return (
     <Svg viewBox="0 0 24 24" width={size} height={size}>
-      <Path d="M2 5h20v14H2V5Z" fill="none" stroke={color} strokeWidth={2} />
-      <Circle cx={7.5} cy={11} r={2} fill="none" stroke={color} strokeWidth={1.5} />
-      <Path d="M4.5 16.5c0-1.5 1.3-2.5 3-2.5s3 1 3 2.5" fill="none" stroke={color} strokeWidth={1.5} />
-      <Path d="M13.5 9.5h6M13.5 12.5h6M13.5 15.5h4" fill="none" stroke={color} strokeWidth={1.5} />
+      <Path
+        d="M4 5h16v15H4V5Z"
+        fill="none"
+        stroke={color}
+        strokeWidth={2}
+      />
+      <Path d="M4 9.5h16" fill="none" stroke={color} strokeWidth={2} />
+      <Path d="M8 2.5v4M16 2.5v4" fill="none" stroke={color} strokeWidth={2} />
+    </Svg>
+  );
+}
+
+export function IconBanco({ color, size = 9 }: PdfIconProps) {
+  return (
+    <Svg viewBox="0 0 24 24" width={size} height={size}>
+      <Path d="M12 2 22 8H2Z" fill="none" stroke={color} strokeWidth={1.6} />
+      <Path
+        d="M4 8v10M8 8v10M12 8v10M16 8v10M20 8v10"
+        fill="none"
+        stroke={color}
+        strokeWidth={1.6}
+      />
+      <Path d="M2 20h20" fill="none" stroke={color} strokeWidth={1.6} />
+    </Svg>
+  );
+}
+
+export function IconWallet({ color, size = 9 }: PdfIconProps) {
+  return (
+    <Svg viewBox="0 0 24 24" width={size} height={size}>
+      <Path
+        d="M3 7a2 2 0 0 1 2-2h11l3 3v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"
+        fill="none"
+        stroke={color}
+        strokeWidth={1.6}
+      />
+      <Circle cx={16} cy={13} r={1.6} fill={color} />
     </Svg>
   );
 }

@@ -68,6 +68,24 @@ export function buildWaveRibbonPath(
   );
 }
 
+/**
+ * Máscara blanca que cubre desde el borde inferior ondulado de una cinta
+ * hasta el final de una zona (p. ej. el encabezado), para que esa zona
+ * "corte" limpio a la altura de la ola sin dejar sobrante de color debajo.
+ */
+export function buildBelowRibbonMaskPath(
+  width: number,
+  zoneHeight: number,
+  ribbonBottomBaseline: number,
+  amplitude: number,
+  periods: number
+): string {
+  return (
+    `M0,${ribbonBottomBaseline} ${traceWave(width, ribbonBottomBaseline, amplitude, periods, "forward")}` +
+    ` L${width},${zoneHeight} L0,${zoneHeight} Z`
+  );
+}
+
 export const HEADER_CAP_PATH_D = buildHeaderCapPath(
   WAVE_VIEWBOX_WIDTH,
   WAVE_BASELINE,
@@ -83,66 +101,33 @@ export const WAVE_RIBBON_PATH_D = buildWaveRibbonPath(
   WAVE_PERIODS
 );
 
-// --- Onda vertical: divisor de paneles del encabezado (feature 007) ---
+// --- Divisor diagonal recto de paneles del encabezado (feature 007) ---
 
 export const PANEL_VIEWBOX_WIDTH = 600;
-export const PANEL_BASELINE_X = 360;
-export const PANEL_WAVE_AMPLITUDE = 18;
-export const PANEL_WAVE_PERIODS = 1;
+export const PANEL_BASELINE_X = 288;
+export const PANEL_DIAGONAL_SKEW = 34;
 
 /**
- * Igual que `traceWave` pero transpuesta: oscila en X a lo largo de Y, para
- * trazar un divisor vertical (lado a lado) en vez de un borde horizontal.
+ * Región clara del encabezado (panel izquierdo), con el borde derecho recto
+ * pero en diagonal (no vertical): más ancho arriba, más angosto abajo.
  */
-function tracePanelWave(height: number, baselineX: number, amplitude: number, periods: number): string {
-  const period = height / periods;
-  const half = period / 2;
-
-  return [...Array(periods).keys()]
-    .map((i) => {
-      const y0 = i * period;
-      return (
-        `C${baselineX - amplitude},${y0 + half / 3} ${baselineX - amplitude},${y0 + (half * 2) / 3} ${baselineX},${y0 + half}` +
-        ` C${baselineX + amplitude},${y0 + half + half / 3} ${baselineX + amplitude},${y0 + half + (half * 2) / 3} ${baselineX},${y0 + period}`
-      );
-    })
-    .join(" ");
+export function buildLeftPanelPath(height: number, bottomX: number, skew: number): string {
+  const topX = bottomX + skew;
+  return `M0,0 L${topX},0 L${bottomX},${height} L0,${height} Z`;
 }
 
 /**
- * Región oscura del encabezado (panel izquierdo), con el borde derecho
- * ondulado en vez de recto.
+ * Región oscura del encabezado (panel derecho). Comparte exactamente la
+ * misma diagonal que `buildLeftPanelPath`, así los dos paneles quedan
+ * contiguos sin huecos ni superposición.
  */
-export function buildLeftPanelPath(
-  height: number,
-  baselineX: number,
-  amplitude: number,
-  periods: number
-): string {
-  return `M0,0 L${baselineX},0 ${tracePanelWave(height, baselineX, amplitude, periods)} L0,${height} Z`;
+export function buildRightPanelPath(width: number, height: number, bottomX: number, skew: number): string {
+  const topX = bottomX + skew;
+  return `M${width},0 L${topX},0 L${bottomX},${height} L${width},${height} Z`;
 }
 
-/**
- * Región clara del encabezado (panel derecho). Comparte exactamente la misma
- * curva que `buildLeftPanelPath`, así los dos paneles quedan contiguos sin
- * huecos ni superposición.
- */
-export function buildRightPanelPath(
-  width: number,
-  height: number,
-  baselineX: number,
-  amplitude: number,
-  periods: number
-): string {
-  return `M${width},0 L${baselineX},0 ${tracePanelWave(height, baselineX, amplitude, periods)} L${width},${height} Z`;
-}
-
-/** El trazo del filo metálico del divisor reutiliza la misma curva, sin relleno. */
-export function buildPanelDividerStrokePath(
-  height: number,
-  baselineX: number,
-  amplitude: number,
-  periods: number
-): string {
-  return `M${baselineX},0 ${tracePanelWave(height, baselineX, amplitude, periods)}`;
+/** El trazo del filo metálico del divisor reutiliza la misma diagonal, sin relleno. */
+export function buildPanelDividerStrokePath(height: number, bottomX: number, skew: number): string {
+  const topX = bottomX + skew;
+  return `M${topX},0 L${bottomX},${height}`;
 }

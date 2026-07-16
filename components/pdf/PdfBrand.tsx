@@ -2,17 +2,18 @@ import { View, Text, Svg, Path, Image, StyleSheet, Font } from "@react-pdf/rende
 import {
   PANEL_VIEWBOX_WIDTH,
   PANEL_BASELINE_X,
-  PANEL_WAVE_AMPLITUDE,
-  PANEL_WAVE_PERIODS,
+  PANEL_DIAGONAL_SKEW,
   buildLeftPanelPath,
   buildRightPanelPath,
   buildPanelDividerStrokePath,
+  buildWaveRibbonPath,
+  buildBelowRibbonMaskPath,
 } from "./pdfWave";
 import {
   IconDireccion,
   IconTelefono,
   IconCorreo,
-  IconNit,
+  IconFecha,
   IconFabricacion,
   IconInstalacion,
   IconMantenimiento,
@@ -24,19 +25,16 @@ import {
 // de línea (ej. "ERICK JU-LIAN"); solo se ajusta por espacios.
 Font.registerHyphenationCallback((word) => [word]);
 
-export const HEADER_ZONE_HEIGHT = 132;
+export const HEADER_ZONE_HEIGHT = 150;
 
 export const COLORS = {
   dark: "#1b2a31",
   accent: "#215866",
   yellow: "#f2b705",
   textMuted: "#4b5b62",
-  panelDark: "#00293b",
-  panelLight: "#cdcdcf",
+  metal: "#e8e9ea",
 };
 
-export const TABLE_HEADER = "#023145";
-export const TABLE_HIGHLIGHT = "#04445d";
 export const TABLE_ROW_LIGHT = "#fefefe";
 export const TABLE_ROW_ALT = "#edeef0";
 
@@ -52,7 +50,6 @@ export const EMPRESA = {
   direccion: "Calle 75 N° 78-56, Bogotá DC – Colombia",
   telefono: "322 200 3921",
   correo: "erickjulian.for@gmail.com",
-  nit: "Pendiente",
   titular: "ERICK JULIAN DUEÑAS FORERO",
 };
 
@@ -73,24 +70,35 @@ export function formatFecha(fecha: Date): string {
     .toUpperCase();
 }
 
-const LEFT_PANEL_PATH_D = buildLeftPanelPath(
-  HEADER_ZONE_HEIGHT,
-  PANEL_BASELINE_X,
-  PANEL_WAVE_AMPLITUDE,
-  PANEL_WAVE_PERIODS
-);
+const LEFT_PANEL_PATH_D = buildLeftPanelPath(HEADER_ZONE_HEIGHT, PANEL_BASELINE_X, PANEL_DIAGONAL_SKEW);
 const RIGHT_PANEL_PATH_D = buildRightPanelPath(
   PANEL_VIEWBOX_WIDTH,
   HEADER_ZONE_HEIGHT,
   PANEL_BASELINE_X,
-  PANEL_WAVE_AMPLITUDE,
-  PANEL_WAVE_PERIODS
+  PANEL_DIAGONAL_SKEW
 );
 const DIVIDER_STROKE_PATH_D = buildPanelDividerStrokePath(
   HEADER_ZONE_HEIGHT,
   PANEL_BASELINE_X,
-  PANEL_WAVE_AMPLITUDE,
-  PANEL_WAVE_PERIODS
+  PANEL_DIAGONAL_SKEW
+);
+
+const HEADER_WAVE_BASELINE = HEADER_ZONE_HEIGHT - 13;
+const HEADER_WAVE_THICKNESS = 7;
+const HEADER_WAVE_AMPLITUDE = 4;
+const HEADER_WAVE_RIBBON_PATH_D = buildWaveRibbonPath(
+  PANEL_VIEWBOX_WIDTH,
+  HEADER_WAVE_BASELINE,
+  HEADER_WAVE_THICKNESS,
+  HEADER_WAVE_AMPLITUDE,
+  1
+);
+const HEADER_WAVE_MASK_PATH_D = buildBelowRibbonMaskPath(
+  PANEL_VIEWBOX_WIDTH,
+  HEADER_ZONE_HEIGHT,
+  HEADER_WAVE_BASELINE + HEADER_WAVE_THICKNESS,
+  HEADER_WAVE_AMPLITUDE,
+  1
 );
 
 const styles = StyleSheet.create({
@@ -115,44 +123,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   leftPanel: {
-    width: "58%",
-    paddingLeft: 20,
-    paddingRight: 26,
-    color: "#ffffff",
+    width: "48%",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 18,
+    paddingRight: 10,
   },
-  companyBlock: { flexDirection: "row", alignItems: "center" },
-  logo: { width: 40, height: 40, marginRight: 10 },
-  companyName: { fontSize: 13, fontFamily: "Helvetica-Bold" },
-  companyTaglineLinea1: { fontSize: 7, color: "#ffffff", marginTop: 3, fontFamily: "Helvetica-Bold" },
-  companyTaglineLinea2: { fontSize: 6.5, color: "#8fb7c9", marginTop: 1, maxWidth: 190 },
+  logo: { width: 108, height: 108, marginRight: 8 },
+  companyName: { fontSize: 12, fontFamily: "Helvetica-Bold", color: COLORS.dark },
+  companyTaglineLinea1: { fontSize: 6.5, color: COLORS.accent, marginTop: 3, fontFamily: "Helvetica-Bold" },
+  companyTaglineLinea2: { fontSize: 6, color: COLORS.textMuted, marginTop: 1, maxWidth: 140 },
   rightPanel: {
-    width: "42%",
-    paddingLeft: 26,
+    width: "52%",
+    paddingLeft: 44,
     paddingRight: 18,
+    color: "#ffffff",
   },
   contactRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingBottom: 5,
-    marginBottom: 5,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#a9a9ac",
+    marginBottom: 8,
   },
-  contactRowLast: { borderBottomWidth: 0, marginBottom: 0, paddingBottom: 0 },
-  contactBadge: {
-    width: 14,
-    height: 14,
-    borderRadius: 3,
-    backgroundColor: COLORS.panelDark,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  contactText: { fontSize: 7.5, color: COLORS.panelDark },
+  contactText: { fontSize: 7.5, color: "#ffffff" },
   footer: {
-    marginTop: "auto",
-    backgroundColor: COLORS.panelDark,
-    color: "#ffffff",
+    backgroundColor: COLORS.dark,
+    color: COLORS.yellow,
     fontSize: 8,
     fontFamily: "Helvetica-Bold",
     textAlign: "center",
@@ -163,6 +159,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   serviceBoxes: {
+    marginTop: "auto",
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: TABLE_ROW_ALT,
@@ -173,12 +170,16 @@ const styles = StyleSheet.create({
   serviceText: {
     fontSize: 6.5,
     fontFamily: "Helvetica-Bold",
-    color: COLORS.panelDark,
+    color: COLORS.dark,
     textAlign: "center",
   },
 });
 
-export function PdfHeader() {
+interface PdfHeaderProps {
+  fecha?: Date;
+}
+
+export function PdfHeader({ fecha }: PdfHeaderProps = {}) {
   return (
     <View style={styles.headerZone}>
       <Svg
@@ -186,13 +187,15 @@ export function PdfHeader() {
         viewBox={`0 0 ${PANEL_VIEWBOX_WIDTH} ${HEADER_ZONE_HEIGHT}`}
         preserveAspectRatio="none"
       >
-        <Path d={LEFT_PANEL_PATH_D} fill={COLORS.panelDark} />
-        <Path d={RIGHT_PANEL_PATH_D} fill={COLORS.panelLight} />
-        <Path d={DIVIDER_STROKE_PATH_D} fill="none" stroke="#f4f4f5" strokeWidth={1.5} />
+        <Path d={LEFT_PANEL_PATH_D} fill={COLORS.metal} />
+        <Path d={RIGHT_PANEL_PATH_D} fill={COLORS.dark} />
+        <Path d={DIVIDER_STROKE_PATH_D} fill="none" stroke="#c7c9ca" strokeWidth={1.5} />
+        <Path d={HEADER_WAVE_RIBBON_PATH_D} fill={COLORS.yellow} />
+        <Path d={HEADER_WAVE_MASK_PATH_D} fill="#ffffff" />
       </Svg>
 
       <View style={styles.headerContent}>
-        <View style={[styles.leftPanel, styles.companyBlock]}>
+        <View style={styles.leftPanel}>
           <Image src="/logo.png" style={styles.logo} />
           <View>
             <Text style={styles.companyName}>{EMPRESA.nombre}</Text>
@@ -202,29 +205,23 @@ export function PdfHeader() {
         </View>
         <View style={styles.rightPanel}>
           <View style={styles.contactRow}>
-            <View style={styles.contactBadge}>
-              <IconTelefono color="#ffffff" size={8} />
-            </View>
+            <IconTelefono color="#ffffff" size={8} />
             <Text style={styles.contactText}>{EMPRESA.telefono}</Text>
           </View>
           <View style={styles.contactRow}>
-            <View style={styles.contactBadge}>
-              <IconCorreo color="#ffffff" size={8} />
-            </View>
+            <IconCorreo color="#ffffff" size={8} />
             <Text style={styles.contactText}>{EMPRESA.correo}</Text>
           </View>
           <View style={styles.contactRow}>
-            <View style={styles.contactBadge}>
-              <IconDireccion color="#ffffff" size={8} />
-            </View>
+            <IconDireccion color="#ffffff" size={8} />
             <Text style={styles.contactText}>{EMPRESA.direccion}</Text>
           </View>
-          <View style={[styles.contactRow, styles.contactRowLast]}>
-            <View style={styles.contactBadge}>
-              <IconNit color="#ffffff" size={8} />
+          {fecha && (
+            <View style={styles.contactRow}>
+              <IconFecha color="#ffffff" size={8} />
+              <Text style={styles.contactText}>{formatFecha(fecha)}</Text>
             </View>
-            <Text style={styles.contactText}>NIT: {EMPRESA.nit}</Text>
-          </View>
+          )}
         </View>
       </View>
     </View>
@@ -237,7 +234,7 @@ export function PdfServiceBoxes() {
       {SERVICIOS.map(({ Icon, texto }) => (
         <View key={texto} style={styles.serviceBox}>
           <View style={styles.serviceIcon}>
-            <Icon color={COLORS.panelDark} />
+            <Icon color={COLORS.dark} />
           </View>
           <Text style={styles.serviceText}>{texto}</Text>
         </View>

@@ -3,8 +3,6 @@ import { formatCurrencyCOP } from "@/lib/currency";
 import type { CuentaCobro } from "@/models/CuentaCobro";
 import {
   COLORS,
-  TABLE_HEADER,
-  TABLE_HIGHLIGHT,
   EMPRESA,
   PdfHeader,
   PdfServiceBoxes,
@@ -12,12 +10,17 @@ import {
   formatFecha,
   tableRowBackground,
 } from "./PdfBrand";
+import { IconBanco, IconWallet } from "./pdfIcons";
 
 const FORMA_PAGO = [
-  "DAVIVIENDA: 0570 4518 7009 3346 – Ahorros – ERICK JULIAN DUEÑAS FORERO",
-  "NEQUI: 322 200 3921",
-  "Bre-B: 322 200 3921",
-];
+  {
+    Icon: IconBanco,
+    label: "DAVIVIENDA:",
+    detalle: "0570 4518 7009 3346 – Ahorros – a nombre de ERICK JULIAN DUEÑAS FORERO",
+  },
+  { Icon: IconWallet, label: "NEQUI:", detalle: "322 200 3921" },
+  { Icon: IconBanco, label: "Bre-B:", detalle: "322 200 3921" },
+] as const;
 
 const styles = StyleSheet.create({
   page: {
@@ -42,7 +45,7 @@ const styles = StyleSheet.create({
   metaLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.accent },
   metaValue: { fontSize: 8 },
   table: { marginTop: 8, borderWidth: 1, borderColor: COLORS.dark },
-  tableHeaderRow: { flexDirection: "row", backgroundColor: TABLE_HEADER },
+  tableHeaderRow: { flexDirection: "row", backgroundColor: COLORS.dark },
   tableHeaderCell: {
     color: "#ffffff",
     fontSize: 8,
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
     padding: 6,
     textAlign: "right",
   },
-  saldoRow: { flexDirection: "row", backgroundColor: TABLE_HIGHLIGHT },
+  saldoRow: { flexDirection: "row", backgroundColor: COLORS.dark },
   saldoLabel: {
     width: "83%",
     color: "#ffffff",
@@ -80,7 +83,8 @@ const styles = StyleSheet.create({
   },
   saldoValue: {
     width: "17%",
-    color: "#ffffff",
+    backgroundColor: COLORS.yellow,
+    color: COLORS.dark,
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
     padding: 6,
@@ -97,9 +101,20 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
     color: COLORS.accent,
-    marginBottom: 4,
+    marginBottom: 6,
   },
-  formaPagoLine: { fontSize: 8, marginBottom: 3 },
+  formaPagoRow: { flexDirection: "row", alignItems: "flex-start", gap: 6, marginBottom: 6 },
+  formaPagoBadge: {
+    width: 16,
+    height: 16,
+    borderRadius: 3,
+    backgroundColor: COLORS.dark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formaPagoLabel: { fontSize: 8, fontFamily: "Helvetica-Bold" },
+  formaPagoDetalle: { fontSize: 7.5, color: COLORS.textMuted, marginTop: 1, maxWidth: 180 },
+  qrBlock: { alignItems: "center" },
   qrPlaceholder: {
     width: 80,
     height: 80,
@@ -111,11 +126,20 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   qrPlaceholderText: { fontSize: 6.5, color: COLORS.textMuted, textAlign: "center" },
+  qrImage: { width: 80, height: 80, objectFit: "contain", borderWidth: 1, borderColor: COLORS.dark },
+  qrCaption: {
+    fontSize: 6.5,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.dark,
+    textAlign: "center",
+    marginTop: 4,
+    maxWidth: 90,
+  },
   signatureBlock: { alignItems: "flex-end" },
   thanksLine: { fontSize: 8, color: COLORS.textMuted, textAlign: "right" },
   thanksLineBold: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
   signaturePlaceholder: {
-    width: 160,
+    width: 190,
     borderTopWidth: 1,
     borderTopColor: COLORS.dark,
     paddingTop: 4,
@@ -123,15 +147,16 @@ const styles = StyleSheet.create({
   },
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
   signatureTitular: { fontSize: 7, color: COLORS.textMuted, marginTop: 1 },
-  signatureImage: { width: 160, height: 40, objectFit: "contain", marginTop: 6 },
+  signatureImage: { width: 190, height: 95, objectFit: "contain", marginTop: 6 },
 });
 
 interface CuentaCobroPdfProps {
   cuenta: Pick<CuentaCobro, "cliente" | "items" | "consecutivo" | "fecha" | "total" | "abonos" | "saldo">;
   firmaUrl?: string;
+  qrUrl?: string;
 }
 
-export default function CuentaCobroPdf({ cuenta, firmaUrl }: CuentaCobroPdfProps) {
+export default function CuentaCobroPdf({ cuenta, firmaUrl, qrUrl }: CuentaCobroPdfProps) {
   const { cliente, items, consecutivo, fecha, total, abonos, saldo } = cuenta;
   const abonoTotal = abonos.reduce((sum, abono) => sum + abono.valor, 0);
 
@@ -217,15 +242,30 @@ export default function CuentaCobroPdf({ cuenta, firmaUrl }: CuentaCobroPdfProps
           <View style={styles.bottomRow}>
             <View style={styles.formaPago}>
               <Text style={styles.formaPagoTitle}>FORMA DE PAGO</Text>
-              {FORMA_PAGO.map((linea) => (
-                <Text key={linea} style={styles.formaPagoLine}>
-                  {linea}
-                </Text>
+              {FORMA_PAGO.map(({ Icon, label, detalle }) => (
+                <View key={label} style={styles.formaPagoRow}>
+                  <View style={styles.formaPagoBadge}>
+                    <Icon color="#ffffff" size={9} />
+                  </View>
+                  <View>
+                    <Text style={styles.formaPagoLabel}>{label}</Text>
+                    <Text style={styles.formaPagoDetalle}>{detalle}</Text>
+                  </View>
+                </View>
               ))}
             </View>
 
-            <View style={styles.qrPlaceholder}>
-              <Text style={styles.qrPlaceholderText}>QR de pagos próximamente</Text>
+            <View style={styles.qrBlock}>
+              {qrUrl ? (
+                <>
+                  <Image src={qrUrl} style={styles.qrImage} />
+                  <Text style={styles.qrCaption}>ESCANEA PARA PAGAR</Text>
+                </>
+              ) : (
+                <View style={styles.qrPlaceholder}>
+                  <Text style={styles.qrPlaceholderText}>QR de pagos próximamente</Text>
+                </View>
+              )}
             </View>
 
             <View style={styles.signatureBlock}>

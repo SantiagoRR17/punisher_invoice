@@ -21,3 +21,19 @@ export async function fetchFirmaDataUrl(): Promise<string | undefined> {
     return undefined;
   }
 }
+
+/**
+ * Obtiene el QR de pagos real desde el servidor (mismo mecanismo que la
+ * firma, ver `specs/features/007-rediseno-pdf-v2/`). Si todavía no se ha
+ * subido o falla la petición, devuelve `undefined` sin interrumpir la
+ * generación del PDF (se muestra el placeholder).
+ */
+export async function fetchQrDataUrl(): Promise<string | undefined> {
+  try {
+    const response = await fetch("/api/brand-assets/qr");
+    if (!response.ok) return undefined;
+    return await blobToDataUrl(await response.blob());
+  } catch {
+    return undefined;
+  }
+}

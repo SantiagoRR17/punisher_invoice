@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { formatCurrencyCOP } from "@/lib/currency";
-import { fetchFirmaDataUrl } from "@/lib/brandAssets";
+import { fetchFirmaDataUrl, fetchQrDataUrl } from "@/lib/brandAssets";
 import type { ClienteCuentaCobro, ItemCuentaCobro } from "@/models/CuentaCobro";
 import styles from "./HistorialList.module.css";
 
@@ -116,10 +116,11 @@ export default function HistorialList() {
   }
 
   async function handleDescargarPdf(cuenta: CuentaCobroApi) {
-    const [{ pdf }, { default: CuentaCobroPdf }, firmaUrl] = await Promise.all([
+    const [{ pdf }, { default: CuentaCobroPdf }, firmaUrl, qrUrl] = await Promise.all([
       import("@react-pdf/renderer"),
       import("@/components/pdf/CuentaCobroPdf"),
       fetchFirmaDataUrl(),
+      fetchQrDataUrl(),
     ]);
 
     const blob = await pdf(
@@ -134,6 +135,7 @@ export default function HistorialList() {
           saldo: cuenta.saldo,
         }}
         firmaUrl={firmaUrl}
+        qrUrl={qrUrl}
       />
     ).toBlob();
 

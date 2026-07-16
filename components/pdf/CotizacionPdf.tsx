@@ -3,13 +3,10 @@ import { formatCurrencyCOP } from "@/lib/currency";
 import type { Cotizacion } from "@/models/Cotizacion";
 import {
   COLORS,
-  TABLE_HEADER,
-  TABLE_HIGHLIGHT,
   EMPRESA,
   PdfHeader,
   PdfServiceBoxes,
   PdfFooter,
-  formatFecha,
   tableRowBackground,
 } from "./PdfBrand";
 
@@ -38,12 +35,16 @@ const styles = StyleSheet.create({
   clienteText: { fontSize: 9, marginBottom: 2 },
   clienteNombre: { fontFamily: "Helvetica-Bold" },
   title: { fontSize: 15, fontFamily: "Helvetica-Bold", textAlign: "right" },
-  metaRow: { flexDirection: "row", justifyContent: "flex-end", gap: 8, marginTop: 6 },
-  metaLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.accent },
-  metaValue: { fontSize: 8 },
-  intro: { fontSize: 8, maxWidth: 220, textAlign: "right", color: COLORS.textMuted, marginTop: 6 },
+  intro: {
+    fontSize: 8,
+    maxWidth: 220,
+    alignSelf: "flex-end",
+    textAlign: "right",
+    color: COLORS.textMuted,
+    marginTop: 6,
+  },
   table: { marginTop: 8, borderWidth: 1, borderColor: COLORS.dark },
-  tableHeaderRow: { flexDirection: "row", backgroundColor: TABLE_HEADER },
+  tableHeaderRow: { flexDirection: "row", backgroundColor: COLORS.dark },
   tableHeaderCell: {
     color: "#ffffff",
     fontSize: 8,
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
   colCantidad: { width: "16%", textAlign: "center" },
   colValorUnitario: { width: "17%", textAlign: "right" },
   colValorTotal: { width: "17%", textAlign: "right" },
-  totalRow: { flexDirection: "row", backgroundColor: TABLE_HIGHLIGHT },
+  totalRow: { flexDirection: "row", backgroundColor: COLORS.dark },
   totalLabel: {
     width: "83%",
     color: "#ffffff",
@@ -68,7 +69,8 @@ const styles = StyleSheet.create({
   },
   totalValue: {
     width: "17%",
-    color: "#ffffff",
+    backgroundColor: COLORS.yellow,
+    color: COLORS.dark,
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
     padding: 6,
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
   thanksLine: { fontSize: 8, color: COLORS.textMuted, textAlign: "right" },
   thanksLineBold: { fontFamily: "Helvetica-Bold", color: COLORS.dark },
   signaturePlaceholder: {
-    width: 160,
+    width: 200,
     borderTopWidth: 1,
     borderTopColor: COLORS.dark,
     paddingTop: 4,
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
   },
   signatureText: { fontSize: 8, fontFamily: "Helvetica-Bold" },
   signatureTitular: { fontSize: 7, color: COLORS.textMuted, marginTop: 1 },
-  signatureImage: { width: 160, height: 40, objectFit: "contain", marginTop: 6 },
+  signatureImage: { width: 240, height: 120, objectFit: "contain", marginTop: 6 },
 });
 
 interface CotizacionPdfProps {
@@ -103,7 +105,7 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <PdfHeader />
+        <PdfHeader fecha={fecha} />
 
         <View style={styles.body}>
           <View style={styles.titleRow}>
@@ -117,10 +119,6 @@ export default function CotizacionPdf({ cotizacion, firmaUrl }: CotizacionPdfPro
             </View>
             <View>
               <Text style={styles.title}>COTIZACIÓN Y ORDEN DE TRABAJO</Text>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>FECHA:</Text>
-                <Text style={styles.metaValue}>{formatFecha(fecha)}</Text>
-              </View>
               <Text style={styles.intro}>
                 De manera atenta y con base en su requerimiento, generamos la correspondiente
                 orden de trabajo con las siguientes características:
