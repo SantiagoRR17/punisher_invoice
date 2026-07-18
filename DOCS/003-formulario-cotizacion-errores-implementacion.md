@@ -39,3 +39,13 @@ Bitácora de los problemas encontrados al implementar la feature `003-formulario
 - Se verificó con `npx tsc --noEmit` (sin errores) y `pnpm run test` (55/55 pruebas en verde).
 
 **Lección para próximos cambios de modelo:** al renombrar o quitar un campo del cliente, buscar todas las referencias (`grep` del nombre del campo) antes de dar por completo el cambio — no solo en el formulario y el modelo, sino también en los componentes de PDF, las validaciones del API route y los tests/fixtures asociados.
+
+## 5. Descripción de ítem con especificaciones técnicas rechazada con 400 por exceder el máximo de caracteres
+
+**Qué pasó:** El usuario reportó que al guardar una cotización el formulario mostraba "No se pudo guardar la cotización. Intenta de nuevo.", sin detalle del motivo. El texto de la descripción del ítem (especificaciones técnicas de "Dos barandas curvas") tenía 533 caracteres.
+
+**Cómo se generó:** `app/api/cotizaciones/route.ts` (`isValidItems`) valida `descripcion.length <= MAX_DESCRIPCION`, con `MAX_DESCRIPCION = 500`. Al superar ese límite, la API respondía 400 con `{ error: "Datos de la cotización inválidos." }`. `components/CotizacionForm.tsx` no distingue el motivo de un `response.ok` falso: cualquier error del servidor (400, 401, 500, etc.) se muestra con el mismo mensaje genérico, por lo que el usuario no podía saber que el problema era la longitud del texto.
+
+**Cómo se corrigió:** A petición del usuario, se subió `MAX_DESCRIPCION` de 500 a 5000 caracteres en `app/api/cotizaciones/route.ts` y en `app/api/cuentas-cobro/route.ts` (la misma constante existe en ambas rutas), para permitir descripciones técnicas extensas. Se actualizó el test `tests/api/cuentasCobro.route.test.ts` ("rechaza un ítem cuya descripción excede el máximo permitido") de `"a".repeat(501)` a `"a".repeat(5001)`. Verificado con `pnpm exec vitest run` sobre ambos archivos de test de rutas (11/11 en verde).
+
+**Pendiente/observación:** el mensaje genérico del formulario sigue sin mostrar la causa real de un 400 (aquí fue suerte poder inferirla). Si vuelve a ocurrir confusión similar, valdría la pena mostrar el `error` que ya devuelve la API en vez de un texto fijo — queda pendiente de decisión del usuario, no se tocó en este cambio para no ampliar el alcance.

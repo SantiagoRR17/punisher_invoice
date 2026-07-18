@@ -79,7 +79,7 @@ describe("POST /api/cuentas-cobro", () => {
         method: "POST",
         body: JSON.stringify({
           cliente,
-          items: [{ descripcion: "a".repeat(501), cantidad: 1, valorUnitario: 1000 }],
+          items: [{ descripcion: "a".repeat(5001), cantidad: 1, valorUnitario: 1000 }],
           abonoInicial: 0,
         }),
       })

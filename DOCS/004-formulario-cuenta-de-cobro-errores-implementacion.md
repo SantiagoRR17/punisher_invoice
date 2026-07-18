@@ -29,3 +29,11 @@ Bitácora de los problemas encontrados al implementar la feature `004-formulario
 - `app/api/cuentas-cobro/route.ts` (`isValidCliente`): `cedula` y `direccion` pasaron a ser opcionales (solo se valida tipo y longitud); `celular` pasó a ser el campo obligatorio en vez de `barrio`.
 - `tests/services/cuentaCobroService.test.ts`, `tests/api/cuentasCobro.route.test.ts`, `tests/components/CuentaCobroForm.test.tsx`, `tests/components/HistorialList.test.tsx`: se actualizaron los fixtures y el helper `fillCliente` para usar `celular` en vez de `barrio`.
 - Se verificó con `npx tsc --noEmit` (sin errores) y `pnpm run test` (55/55 pruebas en verde).
+
+## 4. Descripción de ítem con especificaciones técnicas rechazada con 400 por exceder el máximo de caracteres
+
+**Qué pasó:** Mismo caso que en la feature 003 (ver `DOCS/003-formulario-cotizacion-errores-implementacion.md`, punto 5): una descripción de ítem con especificaciones técnicas de 533 caracteres superaba el máximo permitido y la API respondía 400, mostrando el formulario un mensaje genérico sin detalle.
+
+**Cómo se generó:** `app/api/cuentas-cobro/route.ts` valida `descripcion.length <= MAX_DESCRIPCION`, con `MAX_DESCRIPCION = 500` (misma constante que en `cotizaciones/route.ts`).
+
+**Cómo se corrigió:** A petición del usuario, se subió `MAX_DESCRIPCION` de 500 a 5000 caracteres en ambas rutas (`cotizaciones` y `cuentas-cobro`). Se actualizó el test `tests/api/cuentasCobro.route.test.ts` de `"a".repeat(501)` a `"a".repeat(5001)`. Verificado con `pnpm exec vitest run` (11/11 en verde entre ambos archivos de test de rutas).

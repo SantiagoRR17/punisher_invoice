@@ -4,7 +4,7 @@ import { listCuentasCobro, saveCuentaCobro } from "@/services/cuentaCobroService
 import type { ClienteCuentaCobro, ItemCuentaCobro } from "@/models/CuentaCobro";
 
 const MAX_TEXTO = 200;
-const MAX_DESCRIPCION = 500;
+const MAX_DESCRIPCION = 5000;
 const MAX_ITEMS = 50;
 const MAX_CANTIDAD = 10_000;
 const MAX_VALOR_UNITARIO = 1_000_000_000;
