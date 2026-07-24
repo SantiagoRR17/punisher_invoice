@@ -156,6 +156,14 @@ export default function HistorialCotizacionesList() {
                             Editar
                           </Link>
                         )}
+                        {cotizacion._id && (
+                          <Link
+                            className={styles.linkButton}
+                            href={`/cuenta-cobro?cotizacion=${cotizacion._id}`}
+                          >
+                            Generar cuenta de cobro
+                          </Link>
+                        )}
                       </td>
                     </tr>
 

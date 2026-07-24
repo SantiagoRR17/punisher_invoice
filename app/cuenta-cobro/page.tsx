@@ -1,8 +1,27 @@
 import Link from "next/link";
-import CuentaCobroForm from "@/components/CuentaCobroForm";
+import CuentaCobroForm, { type CuentaCobroInicial } from "@/components/CuentaCobroForm";
+import { getCotizacion } from "@/services/cotizacionService";
 import styles from "./cuenta-cobro.module.css";
 
-export default function CuentaCobroPage() {
+export default async function CuentaCobroPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cotizacion?: string }>;
+}) {
+  const { cotizacion: cotizacionId } = await searchParams;
+
+  let initial: CuentaCobroInicial | undefined;
+  if (cotizacionId) {
+    const cotizacion = await getCotizacion(cotizacionId);
+    if (cotizacion) {
+      initial = {
+        cliente: cotizacion.cliente,
+        items: cotizacion.items,
+        abono: cotizacion.abono,
+      };
+    }
+  }
+
   return (
     <main className={styles.page}>
       <header className={styles.header}>
@@ -13,7 +32,7 @@ export default function CuentaCobroPage() {
       </header>
 
       <div className={styles.content}>
-        <CuentaCobroForm />
+        <CuentaCobroForm initial={initial} />
       </div>
 
       <footer className={styles.footer}>

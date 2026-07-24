@@ -3,7 +3,12 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { formatCurrencyCOP } from "@/lib/currency";
 import { fetchFirmaDataUrl, fetchQrDataUrl } from "@/lib/brandAssets";
-import type { TipoDocumento, TratamientoCliente } from "@/models/CuentaCobro";
+import type {
+  ClienteCuentaCobro,
+  ItemCuentaCobro,
+  TipoDocumento,
+  TratamientoCliente,
+} from "@/models/CuentaCobro";
 import styles from "./CuentaCobroForm.module.css";
 
 type TipoAbono = "ninguno" | "50" | "60" | "manual";
@@ -30,10 +35,30 @@ interface ParsedItem {
   valorUnitario: number;
 }
 
+/** Datos de una cotización aprobada para precargar la cuenta de cobro. */
+export interface CuentaCobroInicial {
+  cliente: ClienteCuentaCobro;
+  items: ItemCuentaCobro[];
+  abono: number;
+}
+
+interface CuentaCobroFormProps {
+  initial?: CuentaCobroInicial;
+}
+
 let nextRowId = 1;
 
 function createEmptyRow(): ItemRow {
   return { id: nextRowId++, descripcion: "", cantidad: "", valorUnitario: "" };
+}
+
+function rowsFromItems(items: ItemCuentaCobro[]): ItemRow[] {
+  return items.map((item) => ({
+    id: nextRowId++,
+    descripcion: item.descripcion,
+    cantidad: String(item.cantidad),
+    valorUnitario: String(item.valorUnitario),
+  }));
 }
 
 function parsePositiveNumber(value: string): number | null {
@@ -42,18 +67,28 @@ function parsePositiveNumber(value: string): number | null {
   return parsed;
 }
 
-export default function CuentaCobroForm() {
-  const [cliente, setCliente] = useState<ClienteFormState>({
-    tipoDocumento: "CC",
-    tratamiento: "Señora",
-    nombre: "",
-    cedula: "",
-    direccion: "",
-    celular: "",
-  });
-  const [items, setItems] = useState<ItemRow[]>(() => [createEmptyRow()]);
-  const [tipoAbono, setTipoAbono] = useState<TipoAbono>("ninguno");
-  const [abonoManual, setAbonoManual] = useState("");
+export default function CuentaCobroForm({ initial }: CuentaCobroFormProps = {}) {
+  const [cliente, setCliente] = useState<ClienteFormState>(() =>
+    initial
+      ? { ...initial.cliente }
+      : {
+          tipoDocumento: "CC",
+          tratamiento: "Señora",
+          nombre: "",
+          cedula: "",
+          direccion: "",
+          celular: "",
+        }
+  );
+  const [items, setItems] = useState<ItemRow[]>(() =>
+    initial && initial.items.length > 0 ? rowsFromItems(initial.items) : [createEmptyRow()]
+  );
+  const [tipoAbono, setTipoAbono] = useState<TipoAbono>(() =>
+    initial && initial.abono > 0 ? "manual" : "ninguno"
+  );
+  const [abonoManual, setAbonoManual] = useState(() =>
+    initial && initial.abono > 0 ? String(initial.abono) : ""
+  );
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

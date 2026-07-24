@@ -120,4 +120,30 @@ describe("CuentaCobroForm", () => {
 
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });
+
+  it("precarga cliente, ítems y abono desde una cotización (initial)", () => {
+    render(
+      <CuentaCobroForm
+        initial={{
+          cliente: {
+            tipoDocumento: "CC",
+            tratamiento: "Señora",
+            nombre: "Cliente Precargado",
+            cedula: "51607476",
+            direccion: "Cl 74a #78 16",
+            celular: "300 123 4567",
+          },
+          items: [{ descripcion: "Reja precargada", cantidad: 3, valorUnitario: 2000 }],
+          abono: 1500,
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText("Nombre completo")).toHaveValue("Cliente Precargado");
+    expect(screen.getByLabelText("Descripción del ítem 1")).toHaveValue("Reja precargada");
+    expect(screen.getByLabelText("Cantidad del ítem 1")).toHaveValue(3);
+    // El abono se recompone como valor manual con el monto de la cotización.
+    expect(screen.getByLabelText("Valor del abono")).toHaveValue(1500);
+    expect(screen.getByText(/Abono: \$ 1.500,00/)).toBeInTheDocument();
+  });
 });

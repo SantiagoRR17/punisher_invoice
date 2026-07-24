@@ -18,12 +18,13 @@ _Features completadas, en orden de implementación._
 10. **010 · Tipo de documento (Cédula/NIT)** — Selector de tipo de documento en los formularios de cotización y cuenta de cobro para facturar a personas (CC) o empresas (NIT); el PDF imprime el prefijo correcto y los registros previos se tratan como CC.
 11. **011 · Consecutivo `COT-{año}-####` y abono informativo en cotización** — cada cotización recibe un consecutivo propio (contador independiente del de cuentas de cobro) y el mismo selector de abono (ninguno/50/60/manual) que las cuentas de cobro, mostrado como referencia (ABONO/SALDO) en el PDF.
 12. **012 · Historial de cotizaciones** — pestañas en `/historial` (Cotizaciones / Cuentas de cobro); la pestaña de cotizaciones permite listar, buscar, ver detalle, re-descargar el PDF y editar una cotización (reutilizando el formulario en `/cotizacion/{id}/editar`) conservando su consecutivo.
+13. **013 · Generar cuenta de cobro a partir de una cotización** — botón "Generar cuenta de cobro" en el historial de cotizaciones que abre `/cuenta-cobro?cotizacion={id}` con cliente, ítems y abono precargados; la cuenta se crea con su propio consecutivo `CC-{año}-####` sin modificar la cotización de origen.
 
 ## Siguiente 🔜
 
 _Lo próximo a abordar. Idealmente una sola feature "en curso" a la vez._
 
-- **013 · Generar cuenta de cobro a partir de una cotización** — botón que precarga cliente, ítems y abono en el formulario de cuenta de cobro.
+_Sin una feature concreta en curso — ver "Backlog / ideas" para las próximas candidatas._
 
 ## Backlog / ideas 💡
 
@@ -31,5 +32,6 @@ _Sin comprometer ni ordenar del todo. Ideas que respetan la constitución._
 
 - Control de permisos por rol entre dueño y contadora.
 - Auditoría de cambios sobre cuentas de cobro.
+- Trazabilidad cotización → cuenta de cobro: marcar una cotización como "facturada" y guardar el vínculo al consecutivo de la cuenta generada (feature 013 dejó la conversión sin vínculo persistente).
 
 > Cada feature nueva se crea como `features/NNN-nombre-feature/` con `spec.md`, `plan.md` y `tasks.md` antes de tocar código.
