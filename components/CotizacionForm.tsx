@@ -3,7 +3,12 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { formatCurrencyCOP } from "@/lib/currency";
 import { fetchFirmaDataUrl, fetchQrDataUrl } from "@/lib/brandAssets";
-import type { TipoDocumento, TratamientoCliente } from "@/models/Cotizacion";
+import type {
+  ClienteCotizacion,
+  ItemCotizacion,
+  TipoDocumento,
+  TratamientoCliente,
+} from "@/models/Cotizacion";
 import styles from "./CotizacionForm.module.css";
 
 type TipoAbono = "ninguno" | "50" | "60" | "manual";
@@ -30,10 +35,32 @@ interface ParsedItem {
   valorUnitario: number;
 }
 
+/** Datos de una cotización existente para precargar el formulario en modo edición. */
+export interface CotizacionInicial {
+  id: string;
+  consecutivo: string;
+  cliente: ClienteCotizacion;
+  items: ItemCotizacion[];
+  abono: number;
+}
+
+interface CotizacionFormProps {
+  initial?: CotizacionInicial;
+}
+
 let nextRowId = 1;
 
 function createEmptyRow(): ItemRow {
   return { id: nextRowId++, descripcion: "", cantidad: "", valorUnitario: "" };
+}
+
+function rowsFromItems(items: ItemCotizacion[]): ItemRow[] {
+  return items.map((item) => ({
+    id: nextRowId++,
+    descripcion: item.descripcion,
+    cantidad: String(item.cantidad),
+    valorUnitario: String(item.valorUnitario),
+  }));
 }
 
 function parsePositiveNumber(value: string): number | null {
@@ -42,18 +69,30 @@ function parsePositiveNumber(value: string): number | null {
   return parsed;
 }
 
-export default function CotizacionForm() {
-  const [cliente, setCliente] = useState<ClienteFormState>({
-    tipoDocumento: "CC",
-    tratamiento: "Señora",
-    nombre: "",
-    cedula: "",
-    direccion: "",
-    celular: "",
-  });
-  const [items, setItems] = useState<ItemRow[]>(() => [createEmptyRow()]);
-  const [tipoAbono, setTipoAbono] = useState<TipoAbono>("ninguno");
-  const [abonoManual, setAbonoManual] = useState("");
+export default function CotizacionForm({ initial }: CotizacionFormProps = {}) {
+  const modoEdicion = initial !== undefined;
+
+  const [cliente, setCliente] = useState<ClienteFormState>(() =>
+    initial
+      ? { ...initial.cliente }
+      : {
+          tipoDocumento: "CC",
+          tratamiento: "Señora",
+          nombre: "",
+          cedula: "",
+          direccion: "",
+          celular: "",
+        }
+  );
+  const [items, setItems] = useState<ItemRow[]>(() =>
+    initial && initial.items.length > 0 ? rowsFromItems(initial.items) : [createEmptyRow()]
+  );
+  const [tipoAbono, setTipoAbono] = useState<TipoAbono>(() =>
+    initial && initial.abono > 0 ? "manual" : "ninguno"
+  );
+  const [abonoManual, setAbonoManual] = useState(() =>
+    initial && initial.abono > 0 ? String(initial.abono) : ""
+  );
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -154,14 +193,21 @@ export default function CotizacionForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/cotizaciones", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(validated),
-      });
+      const response = await fetch(
+        modoEdicion ? `/api/cotizaciones/${initial!.id}` : "/api/cotizaciones",
+        {
+          method: modoEdicion ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(validated),
+        }
+      );
 
       if (!response.ok) {
-        setErrors(["No se pudo guardar la cotización. Intenta de nuevo."]);
+        setErrors([
+          modoEdicion
+            ? "No se pudo actualizar la cotización. Intenta de nuevo."
+            : "No se pudo guardar la cotización. Intenta de nuevo.",
+        ]);
         return;
       }
 
@@ -205,7 +251,9 @@ export default function CotizacionForm() {
       URL.revokeObjectURL(url);
 
       setSuccessMessage(
-        `Cotización ${data.consecutivo} guardada y PDF descargado correctamente.`
+        modoEdicion
+          ? `Cotización ${data.consecutivo} actualizada y PDF descargado correctamente.`
+          : `Cotización ${data.consecutivo} guardada y PDF descargado correctamente.`
       );
     } catch {
       setErrors(["Ocurrió un error inesperado al generar la cotización."]);

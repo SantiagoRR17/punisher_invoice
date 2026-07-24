@@ -290,10 +290,26 @@
     color: var(--color-text-muted);
   }
 
-  .actions {
+  /* Especificidad `.table td.actions` (0,2,1) para ganarle a `.table td`
+     (0,1,1), que si no fuerza `display: block` y anula el `gap` de los
+     botones dejándolos pegados. */
+  .table td.actions {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  .actions .linkButton {
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--color-header-accent);
+    border-radius: 0.5rem;
   }
 
   .detailCell {

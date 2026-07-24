@@ -35,6 +35,26 @@ const sesionValida = {
   expires: new Date(Date.now() + 60_000).toISOString(),
 };
 
+describe("GET /api/cotizaciones", () => {
+  it("rechaza la petición sin sesión con 401", async () => {
+    mockAuth.mockResolvedValue(null);
+    const { GET } = await import("@/app/api/cotizaciones/route");
+
+    const response = await GET();
+    expect(response.status).toBe(401);
+  });
+
+  it("devuelve un arreglo cuando hay sesión", async () => {
+    mockAuth.mockResolvedValue(sesionValida);
+    const { GET } = await import("@/app/api/cotizaciones/route");
+
+    const response = await GET();
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(Array.isArray(body)).toBe(true);
+  });
+});
+
 describe("POST /api/cotizaciones", () => {
   it("rechaza la petición sin sesión con 401", async () => {
     mockAuth.mockResolvedValue(null);

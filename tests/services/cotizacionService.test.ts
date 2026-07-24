@@ -1,7 +1,14 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { getDb } from "@/lib/mongodb";
-import { saveCotizacion, type NuevaCotizacionInput } from "@/services/cotizacionService";
+import {
+  CotizacionNoEncontradaError,
+  getCotizacion,
+  listCotizaciones,
+  saveCotizacion,
+  updateCotizacion,
+  type NuevaCotizacionInput,
+} from "@/services/cotizacionService";
 
 let mongoServer: MongoMemoryServer;
 
@@ -52,5 +59,75 @@ describe("saveCotizacion", () => {
 
     const numero = (consecutivo: string) => Number(consecutivo.split("-").at(-1));
     expect(numero(primera.consecutivo)).toBeLessThan(numero(segunda.consecutivo));
+  });
+});
+
+async function idPorConsecutivo(consecutivo: string): Promise<string> {
+  const db = await getDb();
+  const doc = await db.collection("cotizaciones").findOne({ consecutivo });
+  return doc!._id.toString();
+}
+
+describe("listCotizaciones", () => {
+  it("devuelve las cotizaciones con _id como string", async () => {
+    const guardada = await saveCotizacion(baseInput);
+    const todas = await listCotizaciones();
+
+    const encontrada = todas.find((c) => c.consecutivo === guardada.consecutivo);
+    expect(encontrada).toBeDefined();
+    expect(typeof encontrada?._id).toBe("string");
+  });
+});
+
+describe("getCotizacion", () => {
+  it("devuelve la cotización por id", async () => {
+    const guardada = await saveCotizacion(baseInput);
+    const id = await idPorConsecutivo(guardada.consecutivo);
+
+    const cotizacion = await getCotizacion(id);
+    expect(cotizacion?.consecutivo).toBe(guardada.consecutivo);
+  });
+
+  it("devuelve null para un id con formato inválido", async () => {
+    expect(await getCotizacion("no-es-un-objectid")).toBeNull();
+  });
+
+  it("devuelve null para un id válido inexistente", async () => {
+    expect(await getCotizacion("ffffffffffffffffffffffff")).toBeNull();
+  });
+});
+
+describe("updateCotizacion", () => {
+  it("actualiza cliente, ítems y abono conservando el consecutivo", async () => {
+    const guardada = await saveCotizacion(baseInput);
+    const id = await idPorConsecutivo(guardada.consecutivo);
+
+    const actualizada = await updateCotizacion(id, {
+      cliente: { ...baseInput.cliente, nombre: "Cliente Editado" },
+      items: [{ descripcion: "Reja nueva", cantidad: 2, valorUnitario: 1000000 }],
+      abono: 500000,
+    });
+
+    expect(actualizada.consecutivo).toBe(guardada.consecutivo);
+    expect(actualizada.total).toBe(2000000);
+    expect(actualizada.abono).toBe(500000);
+    expect(actualizada.saldo).toBe(1500000);
+
+    const db = await getDb();
+    const stored = await db.collection("cotizaciones").findOne({ consecutivo: guardada.consecutivo });
+    expect(stored?.cliente.nombre).toBe("Cliente Editado");
+    expect(stored?.total).toBe(2000000);
+  });
+
+  it("lanza CotizacionNoEncontradaError para un id inexistente", async () => {
+    await expect(
+      updateCotizacion("ffffffffffffffffffffffff", baseInput)
+    ).rejects.toBeInstanceOf(CotizacionNoEncontradaError);
+  });
+
+  it("lanza CotizacionNoEncontradaError para un id inválido", async () => {
+    await expect(updateCotizacion("id-malo", baseInput)).rejects.toBeInstanceOf(
+      CotizacionNoEncontradaError
+    );
   });
 });

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import HistorialList from "@/components/HistorialList";
+import HistorialTabs from "@/components/HistorialTabs";
 import styles from "./historial.module.css";
 
 export default function HistorialPage() {
@@ -9,11 +9,11 @@ export default function HistorialPage() {
         <Link className={styles.backLink} href="/menu">
           ← Volver al menú
         </Link>
-        <h1 className={styles.title}>Historial de cuentas de cobro</h1>
+        <h1 className={styles.title}>Historial</h1>
       </header>
 
       <div className={styles.content}>
-        <HistorialList />
+        <HistorialTabs />
       </div>
 
       <footer className={styles.footer}>
