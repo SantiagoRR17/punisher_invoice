@@ -22,6 +22,7 @@ beforeEach(() => {
 });
 
 const cliente = {
+  tipoDocumento: "CC" as const,
   tratamiento: "Señor" as const,
   nombre: "Carlos Pérez",
   cedula: "1.234.567",
@@ -83,5 +84,39 @@ describe("POST /api/cotizaciones", () => {
     expect(response.status).toBe(201);
     const body = await response.json();
     expect(body.total).toBe(100000);
+  });
+
+  it("acepta un cliente con NIT", async () => {
+    mockAuth.mockResolvedValue(sesionValida);
+    const { POST } = await import("@/app/api/cotizaciones/route");
+
+    const response = await POST(
+      new Request("http://localhost/api/cotizaciones", {
+        method: "POST",
+        body: JSON.stringify({
+          cliente: { ...cliente, tipoDocumento: "NIT", cedula: "900.123.456-7" },
+          items: [{ descripcion: "Mantenimiento", cantidad: 1, valorUnitario: 50000 }],
+        }),
+      })
+    );
+
+    expect(response.status).toBe(201);
+  });
+
+  it("rechaza un tipo de documento inválido", async () => {
+    mockAuth.mockResolvedValue(sesionValida);
+    const { POST } = await import("@/app/api/cotizaciones/route");
+
+    const response = await POST(
+      new Request("http://localhost/api/cotizaciones", {
+        method: "POST",
+        body: JSON.stringify({
+          cliente: { ...cliente, tipoDocumento: "PASAPORTE" },
+          items: [{ descripcion: "Mantenimiento", cantidad: 1, valorUnitario: 50000 }],
+        }),
+      })
+    );
+
+    expect(response.status).toBe(400);
   });
 });

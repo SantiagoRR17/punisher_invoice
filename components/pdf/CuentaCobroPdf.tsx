@@ -169,9 +169,13 @@ export default function CuentaCobroPdf({ cuenta, firmaUrl, qrUrl }: CuentaCobroP
           <View style={styles.titleRow}>
             <View style={styles.clienteBlock}>
               <Text style={styles.sectionLabel}>DATOS DEL CLIENTE</Text>
-              <Text style={styles.clienteText}>{cliente.tratamiento}:</Text>
+              <Text style={styles.clienteText}>
+                {cliente.tipoDocumento === "NIT" ? "Señores" : cliente.tratamiento}:
+              </Text>
               <Text style={[styles.clienteText, styles.clienteNombre]}>{cliente.nombre}</Text>
-              <Text style={styles.clienteText}>CC {cliente.cedula}</Text>
+              <Text style={styles.clienteText}>
+                {cliente.tipoDocumento ?? "CC"} {cliente.cedula}
+              </Text>
               <Text style={styles.clienteText}>{cliente.direccion}</Text>
               <Text style={styles.clienteText}>Cel. {cliente.celular}</Text>
             </View>

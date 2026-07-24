@@ -20,6 +20,7 @@ describe("saveCotizacion", () => {
   it("guarda la cotización en la colección cotizaciones", async () => {
     const cotizacion: Omit<Cotizacion, "_id" | "createdAt"> = {
       cliente: {
+        tipoDocumento: "CC",
         tratamiento: "Señora",
         nombre: "Nohora Stella Coronado",
         cedula: "51.607.476",

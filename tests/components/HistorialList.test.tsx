@@ -18,6 +18,7 @@ const cuentaPendiente = {
   _id: "1",
   consecutivo: "CC-2026-0001",
   cliente: {
+    tipoDocumento: "CC",
     tratamiento: "Señora",
     nombre: "Nohora Stella Coronado",
     cedula: "51.607.476",

@@ -3,7 +3,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { formatCurrencyCOP } from "@/lib/currency";
 import { fetchFirmaDataUrl, fetchQrDataUrl } from "@/lib/brandAssets";
-import type { TratamientoCliente } from "@/models/CuentaCobro";
+import type { TipoDocumento, TratamientoCliente } from "@/models/CuentaCobro";
 import styles from "./CuentaCobroForm.module.css";
 
 type TipoAbono = "ninguno" | "50" | "60" | "manual";
@@ -16,6 +16,7 @@ interface ItemRow {
 }
 
 interface ClienteFormState {
+  tipoDocumento: TipoDocumento;
   tratamiento: TratamientoCliente;
   nombre: string;
   cedula: string;
@@ -43,6 +44,7 @@ function parsePositiveNumber(value: string): number | null {
 
 export default function CuentaCobroForm() {
   const [cliente, setCliente] = useState<ClienteFormState>({
+    tipoDocumento: "CC",
     tratamiento: "Señora",
     nombre: "",
     cedula: "",
@@ -219,19 +221,21 @@ export default function CuentaCobroForm() {
         <legend className={styles.legend}>Datos del cliente</legend>
 
         <div className={styles.grid}>
-          <label className={styles.field}>
-            <span className={styles.label}>Tratamiento</span>
-            <select
-              className={styles.input}
-              value={cliente.tratamiento}
-              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                updateCliente("tratamiento", event.target.value)
-              }
-            >
-              <option value="Señora">Señora</option>
-              <option value="Señor">Señor</option>
-            </select>
-          </label>
+          {cliente.tipoDocumento !== "NIT" && (
+            <label className={styles.field}>
+              <span className={styles.label}>Tratamiento</span>
+              <select
+                className={styles.input}
+                value={cliente.tratamiento}
+                onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                  updateCliente("tratamiento", event.target.value)
+                }
+              >
+                <option value="Señora">Señora</option>
+                <option value="Señor">Señor</option>
+              </select>
+            </label>
+          )}
 
           <label className={styles.field}>
             <span className={styles.label}>Nombre completo</span>
@@ -244,7 +248,21 @@ export default function CuentaCobroForm() {
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>Cédula</span>
+            <span className={styles.label}>Tipo de documento</span>
+            <select
+              className={styles.input}
+              value={cliente.tipoDocumento}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                updateCliente("tipoDocumento", event.target.value)
+              }
+            >
+              <option value="CC">Cédula</option>
+              <option value="NIT">NIT</option>
+            </select>
+          </label>
+
+          <label className={styles.field}>
+            <span className={styles.label}>{cliente.tipoDocumento === "NIT" ? "NIT" : "Cédula"}</span>
             <input
               className={styles.input}
               type="text"

@@ -22,6 +22,7 @@ beforeEach(() => {
 });
 
 const cliente = {
+  tipoDocumento: "CC" as const,
   tratamiento: "Señora" as const,
   nombre: "Nohora Stella Coronado",
   cedula: "51.607.476",

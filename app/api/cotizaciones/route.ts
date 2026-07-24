@@ -14,6 +14,7 @@ function isValidCliente(cliente: unknown): cliente is ClienteCotizacion {
   const c = cliente as Record<string, unknown>;
 
   return (
+    (c.tipoDocumento === "CC" || c.tipoDocumento === "NIT") &&
     (c.tratamiento === "Señor" || c.tratamiento === "Señora") &&
     typeof c.nombre === "string" &&
     c.nombre.trim().length > 0 &&

@@ -1,6 +1,9 @@
 export type TratamientoCliente = "Señor" | "Señora";
 
+export type TipoDocumento = "CC" | "NIT";
+
 export interface ClienteCotizacion {
+  tipoDocumento: TipoDocumento;
   tratamiento: TratamientoCliente;
   nombre: string;
   cedula: string;
