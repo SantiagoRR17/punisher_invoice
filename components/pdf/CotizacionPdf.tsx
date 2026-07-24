@@ -46,6 +46,9 @@ const styles = StyleSheet.create({
   clienteText: { fontSize: 9, marginBottom: 2 },
   clienteNombre: { fontFamily: "Helvetica-Bold" },
   title: { fontSize: 15, fontFamily: "Helvetica-Bold", textAlign: "right" },
+  metaRow: { flexDirection: "row", justifyContent: "flex-end", gap: 8, marginTop: 4 },
+  metaLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.accent },
+  metaValue: { fontSize: 8 },
   intro: {
     fontSize: 8,
     maxWidth: 220,
@@ -69,6 +72,20 @@ const styles = StyleSheet.create({
   colCantidad: { width: "16%", textAlign: "center" },
   colValorUnitario: { width: "17%", textAlign: "right" },
   colValorTotal: { width: "17%", textAlign: "right" },
+  summaryRow: { flexDirection: "row", borderTopWidth: 1, borderTopColor: "#dddddd" },
+  summaryLabel: {
+    width: "83%",
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    padding: 6,
+    textAlign: "right",
+  },
+  summaryValue: {
+    width: "17%",
+    fontSize: 9,
+    padding: 6,
+    textAlign: "right",
+  },
   totalRow: { flexDirection: "row", backgroundColor: COLORS.dark },
   totalLabel: {
     width: "83%",
@@ -151,13 +168,18 @@ const styles = StyleSheet.create({
 });
 
 interface CotizacionPdfProps {
-  cotizacion: Pick<Cotizacion, "cliente" | "items" | "fecha" | "total">;
+  cotizacion: Pick<Cotizacion, "cliente" | "items" | "consecutivo" | "fecha" | "total" | "abono">;
   firmaUrl?: string;
   qrUrl?: string;
 }
 
 export default function CotizacionPdf({ cotizacion, firmaUrl, qrUrl }: CotizacionPdfProps) {
-  const { cliente, items, fecha, total } = cotizacion;
+  const { cliente, items, consecutivo, fecha, total, abono } = cotizacion;
+  const saldo = total - abono;
+  const notaAbono =
+    abono > 0
+      ? "El abono indicado en el resumen se paga al inicio del proyecto y el saldo restante al finalizar la entrega total."
+      : NOTAS[1];
 
   return (
     <Document>
@@ -180,6 +202,10 @@ export default function CotizacionPdf({ cotizacion, firmaUrl, qrUrl }: Cotizacio
             </View>
             <View>
               <Text style={styles.title}>COTIZACIÓN Y ORDEN DE TRABAJO</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>N° COTIZACIÓN:</Text>
+                <Text style={styles.metaValue}>{consecutivo}</Text>
+              </View>
               <Text style={styles.intro}>
                 De manera atenta y con base en su requerimiento, generamos la correspondiente
                 orden de trabajo con las siguientes características:
@@ -215,10 +241,27 @@ export default function CotizacionPdf({ cotizacion, firmaUrl, qrUrl }: Cotizacio
               </View>
             ))}
 
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>TOTAL</Text>
-              <Text style={styles.totalValue}>{formatCurrencyCOP(total)}</Text>
-            </View>
+            {abono > 0 ? (
+              <>
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>TOTAL</Text>
+                  <Text style={styles.summaryValue}>{formatCurrencyCOP(total)}</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>ABONO</Text>
+                  <Text style={styles.summaryValue}>{formatCurrencyCOP(abono)}</Text>
+                </View>
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>SALDO</Text>
+                  <Text style={styles.totalValue}>{formatCurrencyCOP(saldo)}</Text>
+                </View>
+              </>
+            ) : (
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>TOTAL</Text>
+                <Text style={styles.totalValue}>{formatCurrencyCOP(total)}</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.notes}>
@@ -228,7 +271,7 @@ export default function CotizacionPdf({ cotizacion, firmaUrl, qrUrl }: Cotizacio
             </Text>
             <Text style={styles.noteLine}>
               <Text style={styles.noteLabel}>NOTA 2: </Text>
-              {NOTAS[1]}
+              {notaAbono}
             </Text>
             <Text style={styles.noteLine}>
               <Text style={styles.noteLabel}>NOTA 3: </Text>

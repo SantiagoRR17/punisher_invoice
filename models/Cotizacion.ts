@@ -19,9 +19,13 @@ export interface ItemCotizacion {
 
 export interface Cotizacion {
   _id?: string;
+  consecutivo: string;
+  anio: number;
+  numero: number;
   cliente: ClienteCotizacion;
   items: ItemCotizacion[];
-  fecha: Date;
   total: number;
+  abono: number;
+  fecha: Date;
   createdAt: Date;
 }

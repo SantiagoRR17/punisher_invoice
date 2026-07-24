@@ -6,6 +6,8 @@ import { fetchFirmaDataUrl, fetchQrDataUrl } from "@/lib/brandAssets";
 import type { TipoDocumento, TratamientoCliente } from "@/models/Cotizacion";
 import styles from "./CotizacionForm.module.css";
 
+type TipoAbono = "ninguno" | "50" | "60" | "manual";
+
 interface ItemRow {
   id: number;
   descripcion: string;
@@ -50,6 +52,8 @@ export default function CotizacionForm() {
     celular: "",
   });
   const [items, setItems] = useState<ItemRow[]>(() => [createEmptyRow()]);
+  const [tipoAbono, setTipoAbono] = useState<TipoAbono>("ninguno");
+  const [abonoManual, setAbonoManual] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -79,7 +83,17 @@ export default function CotizacionForm() {
 
   const totalGeneral = items.reduce((sum, item) => sum + rowTotal(item), 0);
 
-  function validate(): { cliente: ClienteFormState; items: ParsedItem[] } | null {
+  function computeAbono(total: number): number {
+    if (tipoAbono === "50") return total * 0.5;
+    if (tipoAbono === "60") return total * 0.6;
+    if (tipoAbono === "manual") return parsePositiveNumber(abonoManual) ?? 0;
+    return 0;
+  }
+
+  const abonoCalculado = computeAbono(totalGeneral);
+  const saldoCalculado = totalGeneral - abonoCalculado;
+
+  function validate(): { cliente: ClienteFormState; items: ParsedItem[]; abono: number } | null {
     const newErrors: string[] = [];
 
     if (!cliente.nombre.trim()) newErrors.push("El nombre del cliente es obligatorio.");
@@ -104,10 +118,30 @@ export default function CotizacionForm() {
       parsedItems.push({ descripcion: item.descripcion.trim(), cantidad, valorUnitario });
     });
 
+    const total = parsedItems.reduce((sum, item) => sum + item.cantidad * item.valorUnitario, 0);
+
+    let abono = 0;
+    if (tipoAbono === "manual") {
+      const manual = parsePositiveNumber(abonoManual);
+      if (manual === null) {
+        newErrors.push("El valor de abono manual debe ser mayor a cero.");
+      } else {
+        abono = manual;
+      }
+    } else if (tipoAbono === "50") {
+      abono = total * 0.5;
+    } else if (tipoAbono === "60") {
+      abono = total * 0.6;
+    }
+
+    if (newErrors.length === 0 && abono > total) {
+      newErrors.push("El abono no puede ser mayor al total de la cotización.");
+    }
+
     setErrors(newErrors);
     if (newErrors.length > 0) return null;
 
-    return { cliente, items: parsedItems };
+    return { cliente, items: parsedItems, abono };
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -131,8 +165,13 @@ export default function CotizacionForm() {
         return;
       }
 
-      const data = (await response.json()) as { total: number };
-      const fecha = new Date();
+      const data = (await response.json()) as {
+        consecutivo: string;
+        total: number;
+        abono: number;
+        fecha: string;
+      };
+      const fecha = new Date(data.fecha);
 
       const [{ pdf }, { default: CotizacionPdf }, firmaUrl, qrUrl] = await Promise.all([
         import("@react-pdf/renderer"),
@@ -146,8 +185,10 @@ export default function CotizacionForm() {
           cotizacion={{
             cliente: validated.cliente,
             items: validated.items,
+            consecutivo: data.consecutivo,
             fecha,
             total: data.total,
+            abono: data.abono,
           }}
           firmaUrl={firmaUrl}
           qrUrl={qrUrl}
@@ -157,13 +198,15 @@ export default function CotizacionForm() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `cotizacion-${validated.cliente.cedula}.pdf`;
+      link.download = `cotizacion-${data.consecutivo}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
 
-      setSuccessMessage("Cotización guardada y PDF descargado correctamente.");
+      setSuccessMessage(
+        `Cotización ${data.consecutivo} guardada y PDF descargado correctamente.`
+      );
     } catch {
       setErrors(["Ocurrió un error inesperado al generar la cotización."]);
     } finally {
@@ -322,6 +365,71 @@ export default function CotizacionForm() {
         </button>
 
         <p className={styles.total}>Total general: {formatCurrencyCOP(totalGeneral)}</p>
+      </fieldset>
+
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.legend}>Abono</legend>
+
+        <div className={styles.abonoOptions}>
+          <label className={styles.radioOption}>
+            <input
+              type="radio"
+              name="tipoAbono"
+              value="ninguno"
+              checked={tipoAbono === "ninguno"}
+              onChange={() => setTipoAbono("ninguno")}
+            />
+            Ninguno
+          </label>
+          <label className={styles.radioOption}>
+            <input
+              type="radio"
+              name="tipoAbono"
+              value="50"
+              checked={tipoAbono === "50"}
+              onChange={() => setTipoAbono("50")}
+            />
+            50%
+          </label>
+          <label className={styles.radioOption}>
+            <input
+              type="radio"
+              name="tipoAbono"
+              value="60"
+              checked={tipoAbono === "60"}
+              onChange={() => setTipoAbono("60")}
+            />
+            60%
+          </label>
+          <label className={styles.radioOption}>
+            <input
+              type="radio"
+              name="tipoAbono"
+              value="manual"
+              checked={tipoAbono === "manual"}
+              onChange={() => setTipoAbono("manual")}
+            />
+            Valor manual
+          </label>
+        </div>
+
+        {tipoAbono === "manual" && (
+          <label className={styles.field}>
+            <span className={styles.label}>Valor del abono</span>
+            <input
+              className={styles.numberInput}
+              type="number"
+              min="0"
+              value={abonoManual}
+              onChange={(event) => setAbonoManual(event.target.value)}
+            />
+          </label>
+        )}
+
+        <div className={styles.resumen}>
+          <p>Abono: {formatCurrencyCOP(abonoCalculado)}</p>
+          <p className={styles.saldo}>Saldo pendiente: {formatCurrencyCOP(saldoCalculado)}</p>
+        </div>
       </fieldset>
 
       {errors.length > 0 && (

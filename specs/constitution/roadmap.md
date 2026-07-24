@@ -16,14 +16,14 @@ _Features completadas, en orden de implementación._
 8. **008 · Medios de pago y QR en cotización** — Extiende a la cotización el bloque "FORMA DE PAGO" + QR que ya existía en cuenta de cobro, diferencia el mensaje de cierre entre cotización ("Será un gusto...") y cuenta de cobro ("Fue un gusto..."), y corrige el logo desactualizado en el despliegue (archivo local nunca comiteado).
 9. **009 · Cambio de contraseña de usuario** — Nueva pantalla `/perfil`, enlazada desde el menú, para que un usuario autenticado cambie su propia contraseña confirmando la actual, con el mismo esquema de límite de intentos que el login.
 10. **010 · Tipo de documento (Cédula/NIT)** — Selector de tipo de documento en los formularios de cotización y cuenta de cobro para facturar a personas (CC) o empresas (NIT); el PDF imprime el prefijo correcto y los registros previos se tratan como CC.
+11. **011 · Consecutivo `COT-{año}-####` y abono informativo en cotización** — cada cotización recibe un consecutivo propio (contador independiente del de cuentas de cobro) y el mismo selector de abono (ninguno/50/60/manual) que las cuentas de cobro, mostrado como referencia (ABONO/SALDO) en el PDF.
 
 ## Siguiente 🔜
 
 _Lo próximo a abordar. Idealmente una sola feature "en curso" a la vez._
 
-Bloque de ajustes a cotizaciones (features 010–013), en orden:
+Bloque de ajustes a cotizaciones (features 012–013), en orden:
 
-- **011 · Consecutivo `COT-{año}-####` y abono informativo en cotización** — dar número consecutivo a las cotizaciones y el mismo selector de abono (50/60/manual) que las cuentas de cobro, mostrado solo como referencia en el PDF.
 - **012 · Historial de cotizaciones** — pestañas en `/historial`, con listar, editar y re-descargar cotizaciones.
 - **013 · Generar cuenta de cobro a partir de una cotización** — botón que precarga cliente, ítems y abono en el formulario de cuenta de cobro.
 

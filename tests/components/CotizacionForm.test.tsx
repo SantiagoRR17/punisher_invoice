@@ -79,7 +79,13 @@ describe("CotizacionForm", () => {
   it("guarda la cotización y descarga el PDF cuando los datos son válidos", async () => {
     fetchMock.mockResolvedValue({
       ok: true,
-      json: async () => ({ id: "abc123", total: 200 }),
+      json: async () => ({
+        consecutivo: "COT-2026-0001",
+        total: 200,
+        abono: 0,
+        saldo: 200,
+        fecha: new Date("2026-05-16").toISOString(),
+      }),
     });
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
@@ -102,7 +108,7 @@ describe("CotizacionForm", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cotización guardada y PDF descargado correctamente.")
+        screen.getByText("Cotización COT-2026-0001 guardada y PDF descargado correctamente.")
       ).toBeInTheDocument();
     });
 

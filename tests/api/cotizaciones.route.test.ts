@@ -77,6 +77,7 @@ describe("POST /api/cotizaciones", () => {
         body: JSON.stringify({
           cliente,
           items: [{ descripcion: "Mantenimiento", cantidad: 2, valorUnitario: 50000 }],
+          abono: 0,
         }),
       })
     );
@@ -84,6 +85,46 @@ describe("POST /api/cotizaciones", () => {
     expect(response.status).toBe(201);
     const body = await response.json();
     expect(body.total).toBe(100000);
+    expect(body.consecutivo).toMatch(/^COT-\d{4}-\d{4}$/);
+  });
+
+  it("guarda el abono y calcula el saldo", async () => {
+    mockAuth.mockResolvedValue(sesionValida);
+    const { POST } = await import("@/app/api/cotizaciones/route");
+
+    const response = await POST(
+      new Request("http://localhost/api/cotizaciones", {
+        method: "POST",
+        body: JSON.stringify({
+          cliente,
+          items: [{ descripcion: "Mantenimiento", cantidad: 2, valorUnitario: 50000 }],
+          abono: 60000,
+        }),
+      })
+    );
+
+    expect(response.status).toBe(201);
+    const body = await response.json();
+    expect(body.abono).toBe(60000);
+    expect(body.saldo).toBe(40000);
+  });
+
+  it("rechaza un abono mayor al total", async () => {
+    mockAuth.mockResolvedValue(sesionValida);
+    const { POST } = await import("@/app/api/cotizaciones/route");
+
+    const response = await POST(
+      new Request("http://localhost/api/cotizaciones", {
+        method: "POST",
+        body: JSON.stringify({
+          cliente,
+          items: [{ descripcion: "Mantenimiento", cantidad: 1, valorUnitario: 50000 }],
+          abono: 60000,
+        }),
+      })
+    );
+
+    expect(response.status).toBe(400);
   });
 
   it("acepta un cliente con NIT", async () => {
@@ -96,6 +137,7 @@ describe("POST /api/cotizaciones", () => {
         body: JSON.stringify({
           cliente: { ...cliente, tipoDocumento: "NIT", cedula: "900.123.456-7" },
           items: [{ descripcion: "Mantenimiento", cantidad: 1, valorUnitario: 50000 }],
+          abono: 0,
         }),
       })
     );

@@ -31,6 +31,18 @@ describe("getNextConsecutivo", () => {
 
     expect(primero2031).toBe(1);
   });
+
+  it("usa contadores independientes por tipo de documento", async () => {
+    const anio = 2032;
+    const cuenta1 = await getNextConsecutivo(anio, "cuenta-cobro");
+    const cuenta2 = await getNextConsecutivo(anio, "cuenta-cobro");
+    const cotizacion1 = await getNextConsecutivo(anio, "cotizacion");
+
+    expect(cuenta1).toBe(1);
+    expect(cuenta2).toBe(2);
+    // La cotización arranca en 1 pese a que ya hay dos cuentas del mismo año.
+    expect(cotizacion1).toBe(1);
+  });
 });
 
 describe("formatConsecutivo", () => {
@@ -38,5 +50,9 @@ describe("formatConsecutivo", () => {
     expect(formatConsecutivo(2026, 1)).toBe("CC-2026-0001");
     expect(formatConsecutivo(2026, 516)).toBe("CC-2026-0516");
     expect(formatConsecutivo(2026, 12345)).toBe("CC-2026-12345");
+  });
+
+  it("permite un prefijo distinto (COT para cotizaciones)", () => {
+    expect(formatConsecutivo(2026, 1, "COT")).toBe("COT-2026-0001");
   });
 });

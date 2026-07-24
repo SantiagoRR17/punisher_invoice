@@ -52,6 +52,10 @@ function isValidItems(items: unknown): items is ItemCotizacion[] {
   });
 }
 
+function isValidAbono(abono: unknown): abono is number {
+  return typeof abono === "number" && Number.isFinite(abono) && abono >= 0;
+}
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user) {
@@ -60,19 +64,30 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
 
-  if (!body || !isValidCliente(body.cliente) || !isValidItems(body.items)) {
+  if (
+    !body ||
+    !isValidCliente(body.cliente) ||
+    !isValidItems(body.items) ||
+    !isValidAbono(body.abono)
+  ) {
     return NextResponse.json({ error: "Datos de la cotización inválidos." }, { status: 400 });
   }
 
   const items = body.items as ItemCotizacion[];
   const total = items.reduce((sum, item) => sum + item.cantidad * item.valorUnitario, 0);
 
-  const id = await saveCotizacion({
+  if (body.abono > total) {
+    return NextResponse.json(
+      { error: "El abono no puede ser mayor al total de la cotización." },
+      { status: 400 }
+    );
+  }
+
+  const cotizacion = await saveCotizacion({
     cliente: body.cliente,
     items,
-    fecha: new Date(),
-    total,
+    abono: body.abono,
   });
 
-  return NextResponse.json({ id, total }, { status: 201 });
+  return NextResponse.json(cotizacion, { status: 201 });
 }
