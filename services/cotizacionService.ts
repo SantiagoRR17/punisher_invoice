@@ -5,6 +5,24 @@ import type { ClienteCotizacion, Cotizacion, ItemCotizacion } from "@/models/Cot
 
 const COTIZACIONES_COLLECTION = "cotizaciones";
 
+/**
+ * Rellena con valores por defecto los campos de cliente que puedan faltar en
+ * cotizaciones antiguas (creadas antes de las features 010/011). Evita que la
+ * edición falle en el PUT por `tipoDocumento`/`tratamiento` ausentes y que la
+ * búsqueda del historial lance excepciones al llamar `.toLowerCase()` sobre
+ * campos indefinidos. Los valores existentes se conservan intactos.
+ */
+function normalizeCliente(cliente: Partial<ClienteCotizacion> | undefined | null): ClienteCotizacion {
+  return {
+    tipoDocumento: cliente?.tipoDocumento === "NIT" ? "NIT" : "CC",
+    tratamiento: cliente?.tratamiento === "Señor" ? "Señor" : "Señora",
+    nombre: cliente?.nombre ?? "",
+    cedula: cliente?.cedula ?? "",
+    direccion: cliente?.direccion ?? "",
+    celular: cliente?.celular ?? "",
+  };
+}
+
 export interface NuevaCotizacionInput {
   cliente: ClienteCotizacion;
   items: ItemCotizacion[];
@@ -57,9 +75,12 @@ export async function listCotizaciones(): Promise<Cotizacion[]> {
 
   // `abono` se normaliza a 0 para cotizaciones creadas antes de la feature 011,
   // que no guardaban ese campo (evita mostrar "$ NaN" en el historial).
+  // `consecutivo` y `cliente` se normalizan para cotizaciones legacy incompletas.
   return cotizaciones.map((cotizacion) => ({
     ...cotizacion,
     _id: cotizacion._id?.toString(),
+    consecutivo: cotizacion.consecutivo ?? "",
+    cliente: normalizeCliente(cotizacion.cliente),
     abono: cotizacion.abono ?? 0,
   }));
 }
@@ -73,7 +94,13 @@ export async function getCotizacion(id: string): Promise<Cotizacion | null> {
     .findOne({ _id: new ObjectId(id) as unknown as string });
 
   return cotizacion
-    ? { ...cotizacion, _id: cotizacion._id?.toString(), abono: cotizacion.abono ?? 0 }
+    ? {
+        ...cotizacion,
+        _id: cotizacion._id?.toString(),
+        consecutivo: cotizacion.consecutivo ?? "",
+        cliente: normalizeCliente(cotizacion.cliente),
+        abono: cotizacion.abono ?? 0,
+      }
     : null;
 }
 

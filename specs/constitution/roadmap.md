@@ -20,6 +20,12 @@ _Features completadas, en orden de implementación._
 12. **012 · Historial de cotizaciones** — pestañas en `/historial` (Cotizaciones / Cuentas de cobro); la pestaña de cotizaciones permite listar, buscar, ver detalle, re-descargar el PDF y editar una cotización (reutilizando el formulario en `/cotizacion/{id}/editar`) conservando su consecutivo.
 13. **013 · Generar cuenta de cobro a partir de una cotización** — botón "Generar cuenta de cobro" en el historial de cotizaciones que abre `/cuenta-cobro?cotizacion={id}` con cliente, ítems y abono precargados; la cuenta se crea con su propio consecutivo `CC-{año}-####` sin modificar la cotización de origen.
 
+## Correcciones / mantenimiento 🔧
+
+_Ajustes transversales que no son una feature nueva. Cada uno documenta sus errores en `DOCS/`._
+
+- **Cotizaciones legacy (edición y búsqueda)** — normaliza en lectura las cotizaciones creadas antes de las features 010/011 (sin `tipoDocumento`, `consecutivo`, `nombre` o `abono`). Corrige: crash del buscador del historial (`toLowerCase` sobre campo indefinido), error "No se pudo actualizar la cotización" (PUT 400 por `tipoDocumento` faltante) y el botón de guardar que no reaccionaba (excepción en `validate()`). Ver `DOCS/014-fix-cotizaciones-legacy-errores-implementacion.md`.
+
 ## Siguiente 🔜
 
 _Lo próximo a abordar. Idealmente una sola feature "en curso" a la vez._

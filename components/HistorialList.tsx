@@ -55,8 +55,8 @@ export default function HistorialList() {
     const texto = searchText.trim().toLowerCase();
     const coincideTexto =
       !texto ||
-      cuenta.consecutivo.toLowerCase().includes(texto) ||
-      cuenta.cliente.nombre.toLowerCase().includes(texto);
+      (cuenta.consecutivo ?? "").toLowerCase().includes(texto) ||
+      (cuenta.cliente?.nombre ?? "").toLowerCase().includes(texto);
 
     const pagada = cuenta.saldo <= 0;
     const coincideEstado =

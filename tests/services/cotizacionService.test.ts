@@ -79,6 +79,49 @@ describe("listCotizaciones", () => {
   });
 });
 
+describe("normalización de cotizaciones legacy", () => {
+  // Simula un documento antiguo (previo a las features 010/011) sin
+  // tipoDocumento, sin consecutivo y con campos de cliente ausentes.
+  async function insertarLegacy() {
+    const db = await getDb();
+    const { insertedId } = await db.collection("cotizaciones").insertOne({
+      cliente: { direccion: "Cl 1 #2 3" },
+      items: [{ descripcion: "Reja antigua", cantidad: 1, valorUnitario: 100000 }],
+      total: 100000,
+      fecha: new Date(),
+      createdAt: new Date(),
+    });
+    return insertedId.toString();
+  }
+
+  it("listCotizaciones rellena cliente, consecutivo y abono faltantes", async () => {
+    const id = await insertarLegacy();
+    const todas = await listCotizaciones();
+    const legacy = todas.find((c) => c._id === id);
+
+    expect(legacy).toBeDefined();
+    expect(legacy?.consecutivo).toBe("");
+    expect(legacy?.abono).toBe(0);
+    expect(legacy?.cliente.tipoDocumento).toBe("CC");
+    expect(legacy?.cliente.tratamiento).toBe("Señora");
+    expect(legacy?.cliente.nombre).toBe("");
+    // No debe lanzar al buscar (regresión del crash client-side).
+    expect(() => legacy!.cliente.nombre.toLowerCase()).not.toThrow();
+  });
+
+  it("getCotizacion rellena los campos faltantes para permitir la edición", async () => {
+    const id = await insertarLegacy();
+    const legacy = await getCotizacion(id);
+
+    expect(legacy?.cliente.tipoDocumento).toBe("CC");
+    expect(legacy?.cliente.tratamiento).toBe("Señora");
+    expect(legacy?.cliente.nombre).toBe("");
+    expect(legacy?.cliente.celular).toBe("");
+    expect(legacy?.consecutivo).toBe("");
+    expect(legacy?.abono).toBe(0);
+  });
+});
+
 describe("getCotizacion", () => {
   it("devuelve la cotización por id", async () => {
     const guardada = await saveCotizacion(baseInput);

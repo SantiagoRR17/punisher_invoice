@@ -43,8 +43,8 @@ export default function HistorialCotizacionesList() {
     const texto = searchText.trim().toLowerCase();
     return (
       !texto ||
-      cotizacion.consecutivo.toLowerCase().includes(texto) ||
-      cotizacion.cliente.nombre.toLowerCase().includes(texto)
+      (cotizacion.consecutivo ?? "").toLowerCase().includes(texto) ||
+      (cotizacion.cliente?.nombre ?? "").toLowerCase().includes(texto)
     );
   });
 
